@@ -3,6 +3,9 @@ package com.imss.sivimss.arquetipo.controller;
 import java.io.IOException;
 import java.util.concurrent.CompletableFuture;
 import java.util.logging.Level;
+
+import javax.validation.Valid;
+
 import java.util.Map;
 import java.util.HashMap;
 
@@ -18,6 +21,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.imss.sivimss.arquetipo.model.request.RequestValidationForm;
 import com.imss.sivimss.arquetipo.service.PeticionesService;
 import com.imss.sivimss.arquetipo.utils.AppConstantes;
 import com.imss.sivimss.arquetipo.utils.LogUtil;
@@ -30,8 +34,8 @@ import io.github.resilience4j.retry.annotation.Retry;
 import io.github.resilience4j.timelimiter.annotation.TimeLimiter;
 
 @RestController
-@RequestMapping("/sivimss/servicios")
-public class ArquetipoController {
+@RequestMapping("/sivimss")
+public class ArqController {
 	@Autowired
 	private PeticionesService peticionesService;
 
@@ -47,6 +51,15 @@ public class ArquetipoController {
 
 	private static final String CONSULTA = "consulta";
 
+	@PostMapping("/ejem")
+    ResponseEntity<String> addUser(@Valid @RequestBody RequestValidationForm request) {
+        
+        return ResponseEntity.ok("Request valido");
+    }
+	
+	
+	
+	
 	@GetMapping("/velatorios/{id}")
 	@CircuitBreaker(name = "msflujo", fallbackMethod = "fallbackconsultaDetalle")
 	@Retry(name = "msflujo", fallbackMethod = "fallbackconsultaDetalle")
