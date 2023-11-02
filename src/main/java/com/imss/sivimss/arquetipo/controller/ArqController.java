@@ -12,6 +12,7 @@ import java.util.Map;
 import java.util.HashMap;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.cglib.proxy.UndeclaredThrowableException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
@@ -25,10 +26,8 @@ import org.springframework.web.bind.annotation.RestController;
 
 
 import com.imss.sivimss.arquetipo.model.request.Persona;
-import com.imss.sivimss.arquetipo.model.request.RequestValidationForm;
 import com.imss.sivimss.arquetipo.service.PeticionesService;
 import com.imss.sivimss.arquetipo.utils.AppConstantes;
-import com.imss.sivimss.arquetipo.utils.DatosRequest;
 
 import com.imss.sivimss.arquetipo.utils.LogUtil;
 import com.imss.sivimss.arquetipo.utils.ProviderServiceRestTemplate;
@@ -63,11 +62,11 @@ public class ArqController {
 	@PostMapping("/ejem")
 	@CircuitBreaker(name = "msflujo", fallbackMethod = "fallbackPersona")
 	@Retry(name = "msflujo", fallbackMethod = "fallbackPersona")
-	@TimeLimiter(name = "msflujo")
-	public ResponseEntity<Persona> addUser(@Valid @RequestBody Persona request) {
+	@TimeLimiter(name = "msflujo", fallbackMethod = "fallbackPersona")
+	public CompletableFuture<Object> addUser(@Valid   @RequestBody Persona request) throws IOException {
 		Response<Object> response = new Response();
-		
-        return ResponseEntity.ok(request);
+		return CompletableFuture.supplyAsync(() -> new ResponseEntity<>(request, HttpStatus.valueOf(200)));
+ 
 
     }
 	
@@ -263,35 +262,33 @@ public class ArqController {
 				.supplyAsync(() -> new ResponseEntity<>(response, HttpStatus.valueOf(response.getCodigo())));
 	}
 
-
-
-	
-	
-	
-	
-	
-	private ResponseEntity<Persona> fallbackPersona(@RequestBody Persona request, Authentication authentication,
+	private CompletableFuture<Object> fallbackPersona( @RequestBody Persona request,
 			CallNotPermittedException e) throws IOException {
-		Response<?> response = providerRestTemplate.respuestaProvider(e.getMessage());
-	    logUtil.crearArchivoLog(Level.INFO.toString(), this.getClass().getSimpleName(), this.getClass().getPackage().toString(), "Resiliencia", AppConstantes.CONSULTA, authentication);
+	    logUtil.crearArchivoLog(Level.INFO.toString(), this.getClass().getSimpleName(), this.getClass().getPackage().toString(), "Resiliencia", AppConstantes.CONSULTA, null);
 
-	    return ResponseEntity.ok(request);
-	}
- 
-	private ResponseEntity<Persona> fallbackPersona(@RequestBody Persona request, Authentication authentication,
+		return CompletableFuture.supplyAsync(() -> new ResponseEntity<>(request, HttpStatus.valueOf(200)));
+	}	
+	
+	private CompletableFuture<Object> fallbackPersona( @RequestBody Persona request,
 			RuntimeException e) throws IOException {
-		Response<?> response = providerRestTemplate.respuestaProvider(e.getMessage());
-	    logUtil.crearArchivoLog(Level.INFO.toString(), this.getClass().getSimpleName(), this.getClass().getPackage().toString(), "Resiliencia", AppConstantes.CONSULTA, authentication);
+	    logUtil.crearArchivoLog(Level.INFO.toString(), this.getClass().getSimpleName(), this.getClass().getPackage().toString(), "Resiliencia", AppConstantes.CONSULTA, null);
 
-	    return ResponseEntity.ok(request);
+		return CompletableFuture.supplyAsync(() -> new ResponseEntity<>(request, HttpStatus.valueOf(200)));
 	}
- 
-	private ResponseEntity<Persona> fallbackPersona(@RequestBody Persona request, Authentication authentication,
+
+	private CompletableFuture<Object> fallbackPersona( @RequestBody Persona request,
 			NumberFormatException e) throws IOException {
-		Response<?> response = providerRestTemplate.respuestaProvider(e.getMessage());
  
-	    logUtil.crearArchivoLog(Level.INFO.toString(), this.getClass().getSimpleName(), this.getClass().getPackage().toString(), "Resiliencia", AppConstantes.CONSULTA, authentication);
-	    
-	    return ResponseEntity.ok(request);
+	    logUtil.crearArchivoLog(Level.INFO.toString(), this.getClass().getSimpleName(), this.getClass().getPackage().toString(), "Resiliencia", AppConstantes.CONSULTA, null);
+
+		return CompletableFuture.supplyAsync(() -> new ResponseEntity<>(request, HttpStatus.valueOf(200)));
 }
+
+	private CompletableFuture<Object> fallbackPersona(@RequestBody Persona request,
+			Exception e) throws IOException {
+ 
+	    logUtil.crearArchivoLog(Level.INFO.toString(), this.getClass().getSimpleName(), this.getClass().getPackage().toString(), "Resiliencia", AppConstantes.CONSULTA, null);
+
+		return CompletableFuture.supplyAsync(() -> new ResponseEntity<>(request, HttpStatus.valueOf(200)));
+	}
 }
