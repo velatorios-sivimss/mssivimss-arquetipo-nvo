@@ -23,11 +23,13 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
+
 import com.imss.sivimss.arquetipo.model.request.Persona;
 import com.imss.sivimss.arquetipo.model.request.RequestValidationForm;
 import com.imss.sivimss.arquetipo.service.PeticionesService;
 import com.imss.sivimss.arquetipo.utils.AppConstantes;
 import com.imss.sivimss.arquetipo.utils.DatosRequest;
+
 import com.imss.sivimss.arquetipo.utils.LogUtil;
 import com.imss.sivimss.arquetipo.utils.ProviderServiceRestTemplate;
 import com.imss.sivimss.arquetipo.utils.Response;
@@ -55,6 +57,7 @@ public class ArqController {
 
 	private static final String CONSULTA = "consulta";
 
+
 	private static final Object Persona = null;
 
 	@PostMapping("/ejem")
@@ -65,6 +68,7 @@ public class ArqController {
 		Response<Object> response = new Response();
 		
         return ResponseEntity.ok(request);
+
     }
 	
 	
@@ -74,7 +78,9 @@ public class ArqController {
 	@CircuitBreaker(name = "msflujo", fallbackMethod = "fallbackconsultaDetalle")
 	@Retry(name = "msflujo", fallbackMethod = "fallbackconsultaDetalle")
 	@TimeLimiter(name = "msflujo")
+
 	public CompletableFuture<Object> consultarById(@PathVariable @Min(1) @Max(18) Integer id, Authentication authentication)	throws IOException {
+
 		Response<Object> response = peticionesService.consultarById(id, authentication);
 		return CompletableFuture.supplyAsync(() -> new ResponseEntity<>(response, HttpStatus.valueOf(response.getCodigo())));
 	}
@@ -256,6 +262,7 @@ public class ArqController {
 		return CompletableFuture
 				.supplyAsync(() -> new ResponseEntity<>(response, HttpStatus.valueOf(response.getCodigo())));
 	}
+
 
 
 	
