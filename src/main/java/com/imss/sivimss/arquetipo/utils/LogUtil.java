@@ -32,7 +32,10 @@ public class LogUtil {
         File archivo = new File(rutaLog +aplicacion + new SimpleDateFormat("ddMMyyyy").format(new Date()) + ".log");
         FileWriter escribirArchivo = new FileWriter(archivo, true);
         try {
-            escribirArchivo.write("" + formatoFechaLog + " --- [" + tipoLog + "] " + origen + " " + clasePath + " : " + mensaje + " , Usuario: " + usuarioDto.getCveUsuario() + " - " + tiempoEjecucion);
+        	String slog = "" + formatoFechaLog + " --- [" + tipoLog + "] " + origen + " " + clasePath + " : " + mensaje + " , Usuario: " + usuarioDto.getCveUsuario() + " - " + tiempoEjecucion;
+        	log.info(slog);
+        	
+            escribirArchivo.write("" + slog);
             escribirArchivo.write("\r\n");
             escribirArchivo.close();
             escribirArchivo.close();

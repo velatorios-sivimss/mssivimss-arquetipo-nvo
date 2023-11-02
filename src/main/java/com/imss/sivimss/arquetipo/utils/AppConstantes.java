@@ -1,6 +1,8 @@
 package com.imss.sivimss.arquetipo.utils;
 
 public class AppConstantes {
+	public static final String CONSULTA = "0";
+	
 	public static final String NUMERO_DE_PAGINA = "0";
 	public static final String TAMANIO_PAGINA = "10";
 	public static final String ORDER_BY = "id";

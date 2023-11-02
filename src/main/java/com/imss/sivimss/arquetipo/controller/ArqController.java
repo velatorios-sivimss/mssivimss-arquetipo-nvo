@@ -3,6 +3,11 @@ package com.imss.sivimss.arquetipo.controller;
 import java.io.IOException;
 import java.util.concurrent.CompletableFuture;
 import java.util.logging.Level;
+
+import javax.validation.Valid;
+import javax.validation.constraints.Max;
+import javax.validation.constraints.Min;
+
 import java.util.Map;
 import java.util.HashMap;
 
@@ -18,8 +23,11 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.imss.sivimss.arquetipo.model.request.Persona;
+import com.imss.sivimss.arquetipo.model.request.RequestValidationForm;
 import com.imss.sivimss.arquetipo.service.PeticionesService;
 import com.imss.sivimss.arquetipo.utils.AppConstantes;
+import com.imss.sivimss.arquetipo.utils.DatosRequest;
 import com.imss.sivimss.arquetipo.utils.LogUtil;
 import com.imss.sivimss.arquetipo.utils.ProviderServiceRestTemplate;
 import com.imss.sivimss.arquetipo.utils.Response;
@@ -30,8 +38,8 @@ import io.github.resilience4j.retry.annotation.Retry;
 import io.github.resilience4j.timelimiter.annotation.TimeLimiter;
 
 @RestController
-@RequestMapping("/sivimss/servicios")
-public class ArquetipoController {
+@RequestMapping("/sivimss")
+public class ArqController {
 	@Autowired
 	private PeticionesService peticionesService;
 
@@ -47,11 +55,26 @@ public class ArquetipoController {
 
 	private static final String CONSULTA = "consulta";
 
+	private static final Object Persona = null;
+
+	@PostMapping("/ejem")
+	@CircuitBreaker(name = "msflujo", fallbackMethod = "fallbackPersona")
+	@Retry(name = "msflujo", fallbackMethod = "fallbackPersona")
+	@TimeLimiter(name = "msflujo")
+	public ResponseEntity<Persona> addUser(@Valid @RequestBody Persona request) {
+		Response<Object> response = new Response();
+		
+        return ResponseEntity.ok(request);
+    }
+	
+	
+	
+	
 	@GetMapping("/velatorios/{id}")
 	@CircuitBreaker(name = "msflujo", fallbackMethod = "fallbackconsultaDetalle")
 	@Retry(name = "msflujo", fallbackMethod = "fallbackconsultaDetalle")
 	@TimeLimiter(name = "msflujo")
-	public CompletableFuture<Object> consultarById(@PathVariable Integer id, Authentication authentication)	throws IOException {
+	public CompletableFuture<Object> consultarById(@PathVariable @Min(1) @Max(18) Integer id, Authentication authentication)	throws IOException {
 		Response<Object> response = peticionesService.consultarById(id, authentication);
 		return CompletableFuture.supplyAsync(() -> new ResponseEntity<>(response, HttpStatus.valueOf(response.getCodigo())));
 	}
@@ -235,4 +258,33 @@ public class ArquetipoController {
 	}
 
 
+	
+	
+	
+	
+	
+	private ResponseEntity<Persona> fallbackPersona(@RequestBody Persona request, Authentication authentication,
+			CallNotPermittedException e) throws IOException {
+		Response<?> response = providerRestTemplate.respuestaProvider(e.getMessage());
+	    logUtil.crearArchivoLog(Level.INFO.toString(), this.getClass().getSimpleName(), this.getClass().getPackage().toString(), "Resiliencia", AppConstantes.CONSULTA, authentication);
+
+	    return ResponseEntity.ok(request);
+	}
+ 
+	private ResponseEntity<Persona> fallbackPersona(@RequestBody Persona request, Authentication authentication,
+			RuntimeException e) throws IOException {
+		Response<?> response = providerRestTemplate.respuestaProvider(e.getMessage());
+	    logUtil.crearArchivoLog(Level.INFO.toString(), this.getClass().getSimpleName(), this.getClass().getPackage().toString(), "Resiliencia", AppConstantes.CONSULTA, authentication);
+
+	    return ResponseEntity.ok(request);
+	}
+ 
+	private ResponseEntity<Persona> fallbackPersona(@RequestBody Persona request, Authentication authentication,
+			NumberFormatException e) throws IOException {
+		Response<?> response = providerRestTemplate.respuestaProvider(e.getMessage());
+ 
+	    logUtil.crearArchivoLog(Level.INFO.toString(), this.getClass().getSimpleName(), this.getClass().getPackage().toString(), "Resiliencia", AppConstantes.CONSULTA, authentication);
+	    
+	    return ResponseEntity.ok(request);
+}
 }
