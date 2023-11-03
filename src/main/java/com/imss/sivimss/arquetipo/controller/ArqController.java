@@ -12,7 +12,6 @@ import java.util.Map;
 import java.util.HashMap;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.cglib.proxy.UndeclaredThrowableException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
@@ -26,8 +25,10 @@ import org.springframework.web.bind.annotation.RestController;
 
 
 import com.imss.sivimss.arquetipo.model.request.Persona;
+import com.imss.sivimss.arquetipo.model.request.RequestValidationForm;
 import com.imss.sivimss.arquetipo.service.PeticionesService;
 import com.imss.sivimss.arquetipo.utils.AppConstantes;
+import com.imss.sivimss.arquetipo.utils.DatosRequest;
 
 import com.imss.sivimss.arquetipo.utils.LogUtil;
 import com.imss.sivimss.arquetipo.utils.ProviderServiceRestTemplate;
@@ -59,46 +60,32 @@ public class ArqController {
 
 	private static final Object Persona = null;
 
-	@PostMapping("/ejem")
-	@CircuitBreaker(name = "msflujo", fallbackMethod = "fallbackPersona")
-	@Retry(name = "msflujo", fallbackMethod = "fallbackPersona")
-	@TimeLimiter(name = "msflujo", fallbackMethod = "fallbackPersona")
-	public CompletableFuture<Object> addUser(@Valid   @RequestBody Persona request) throws IOException {
-		Response<Object> response = new Response();
-		return CompletableFuture.supplyAsync(() -> new ResponseEntity<>(request, HttpStatus.valueOf(200)));
- 
-
-    }
-	
-	
-	
-	
-	@GetMapping("/velatorios/{id}")
-	@CircuitBreaker(name = "msflujo", fallbackMethod = "fallbackconsultaDetalle")
-	@Retry(name = "msflujo", fallbackMethod = "fallbackconsultaDetalle")
+	@GetMapping("/buscar/persona/{id}")
+	@CircuitBreaker(name = "msflujo", fallbackMethod = "fallbackConsultarById")
+	@Retry(name = "msflujo", fallbackMethod = "fallbackConsultarById")
 	@TimeLimiter(name = "msflujo")
-
-	public CompletableFuture<Object> consultarById(@PathVariable @Min(1) @Max(18) Integer id, Authentication authentication)	throws IOException {
-
+	public CompletableFuture<Object> consultarById(@PathVariable Integer id, Authentication authentication)	throws IOException {
 		Response<Object> response = peticionesService.consultarById(id, authentication);
 		return CompletableFuture.supplyAsync(() -> new ResponseEntity<>(response, HttpStatus.valueOf(response.getCodigo())));
 	}
+	
 
-	@GetMapping("/velatorios/paginado/{id}")
-	@CircuitBreaker(name = "msflujo", fallbackMethod = "fallbackconsultaPaginadoById")
-	@Retry(name = "msflujo", fallbackMethod = "fallbackconsultaPaginadoById")
+	@GetMapping("/buscar/persona/paginado")
+	@CircuitBreaker(name = "msflujo", fallbackMethod = "fallbackconsultaPaginado")
+	@Retry(name = "msflujo", fallbackMethod = "fallbackconsultaPaginado")
 	@TimeLimiter(name = "msflujo")
-	public CompletableFuture<Object> consultarByIdPaginado(
-			@RequestParam(defaultValue = AppConstantes.NUMERO_DE_PAGINA) Integer pagina,
-			@RequestParam(defaultValue = AppConstantes.TAMANIO_PAGINA) Integer tamanio,
-			@PathVariable Integer id, Authentication authentication)	throws Throwable {
+	public CompletableFuture<Object> consultarPaginado(
+			@RequestParam(defaultValue = AppConstantes.NUMERO_DE_PAGINA) Integer pagina
+			,@RequestParam(defaultValue = AppConstantes.TAMANIO_PAGINA) Integer tamanio
+			, Authentication authentication)	throws Throwable {
 		Map<String, Object> params = new HashMap<>();
 		params.put(PAGINA, pagina);
 		params.put(TAMANIO, tamanio);
-		Response<Object> response = peticionesService.consultarByIdPaginado(params, id, authentication);
+		Response<Object> response = peticionesService.consultarPaginado(params, authentication);
 		return CompletableFuture.supplyAsync(() -> new ResponseEntity<>(response, HttpStatus.valueOf(response.getCodigo())));
 	}
-	@GetMapping("/velatorios")
+	
+	@GetMapping("/buscar/personas")
 	@CircuitBreaker(name = "msflujo", fallbackMethod = "fallbackconsulta")
 	@Retry(name = "msflujo", fallbackMethod = "fallbackconsulta")
 	@TimeLimiter(name = "msflujo")
@@ -107,64 +94,109 @@ public class ArqController {
 		return CompletableFuture.supplyAsync(() -> new ResponseEntity<>(response, HttpStatus.valueOf(response.getCodigo())));
 	}
 
-	@GetMapping("/velatorios/paginado")
-	@CircuitBreaker(name = "msflujo", fallbackMethod = "fallbackconsultaPaginado")
-	@Retry(name = "msflujo", fallbackMethod = "fallbackconsultaPaginado")
-	@TimeLimiter(name = "msflujo")
-	public CompletableFuture<Object> consultarPaginado(
-			@RequestParam(defaultValue = AppConstantes.NUMERO_DE_PAGINA) Integer pagina,
-			@RequestParam(defaultValue = AppConstantes.TAMANIO_PAGINA) Integer tamanio,
-			Authentication authentication) throws Throwable {
-		Map<String, Object> params = new HashMap<>();
-		params.put(PAGINA, pagina);
-		params.put(TAMANIO, tamanio);
-		Response<Object> response = peticionesService.consultarPaginado(params,authentication);
-		return CompletableFuture.supplyAsync(() -> new ResponseEntity<>(response, HttpStatus.valueOf(response.getCodigo())));
-	}
+	
+	
+	@PostMapping("/ejem")
+	@CircuitBreaker(name = "msflujo", fallbackMethod = "fallbackPersona")
+	@Retry(name = "msflujo", fallbackMethod = "fallbackPersona")
+	@TimeLimiter(name = "msflujo", fallbackMethod = "fallbackPersona")
+	public CompletableFuture<Object> addUser(@Valid   @RequestBody Persona request) throws IOException {
+		Response<Object> response = new Response();
+		return CompletableFuture.supplyAsync(() -> new ResponseEntity<>(request, HttpStatus.valueOf(200)));
+    }
 
 	/*
 	 * Guardar
 	 * 
 	 */
-	@PostMapping("/guardar/velatorio")
+	@PostMapping("/guardar/persona")
 	@CircuitBreaker(name = "msflujo", fallbackMethod = "fallbackGuardar")
 	@Retry(name = "msflujo", fallbackMethod = "fallbackGuardar")
 	@TimeLimiter(name = "msflujo")
-	public CompletableFuture<Object> guardarDatos(@RequestBody String request,
+	public CompletableFuture<Object> guardarDatos(@Valid @RequestBody Persona request,
 			Authentication authentication) throws Throwable {
 		Response<Object> response = peticionesService.guardarDatos(request,authentication);
 		return CompletableFuture.supplyAsync(() -> new ResponseEntity<>(response, HttpStatus.valueOf(response.getCodigo())));
 	}
-	
 
 	/*
 	 * Actualizar
 	 * 
 	 */
-	@PostMapping("/actualizar/velatorio")
+	@PostMapping("/actualizar/persona")
 	@CircuitBreaker(name = "msflujo", fallbackMethod = "fallbackGuardar")
 	@Retry(name = "msflujo", fallbackMethod = "fallbackGuardar")
 	@TimeLimiter(name = "msflujo")
-	public CompletableFuture<Object> actualizarDatos(@RequestBody String request,
+	public CompletableFuture<Object> actualizarDatos(@Valid @RequestBody Persona request,
 			Authentication authentication) throws Throwable {
 		Response<Object> response = peticionesService.actualizaDatos(request,authentication);
 		return CompletableFuture.supplyAsync(() -> new ResponseEntity<>(response, HttpStatus.valueOf(response.getCodigo())));
 	}
 
-
 	/*
-	 * Actualizar
+	 * Borrar
 	 * 
 	 */
-	@PostMapping("/eliminar/velatorio")
+	@PostMapping("/eliminar/persona")
 	@CircuitBreaker(name = "msflujo", fallbackMethod = "fallbackGuardar")
 	@Retry(name = "msflujo", fallbackMethod = "fallbackGuardar")
 	@TimeLimiter(name = "msflujo")
-	public CompletableFuture<Object> bajaDatos(@RequestBody String request,
+	public CompletableFuture<Object> bajaDatos(@RequestBody Persona request,
 			Authentication authentication) throws Throwable {
 		Response<Object> response = peticionesService.borrarDatos(request,authentication);
 		return CompletableFuture.supplyAsync(() -> new ResponseEntity<>(response, HttpStatus.valueOf(response.getCodigo())));
 	}
+	
+	
+	/*
+	 * 
+	 * FallBack
+	 * 
+	 */
+	
+	
+
+	@SuppressWarnings("unused")
+	private CompletableFuture<Object> fallbackGuardar( @RequestBody Persona request,
+			Authentication authentication,
+			CallNotPermittedException e) throws IOException {
+		Response<?> response = providerRestTemplate.respuestaProvider(e.getMessage());
+		 logUtil.crearArchivoLog(Level.INFO.toString(),this.getClass().getSimpleName(),this.getClass().getPackage().toString(),e.getMessage(),CONSULTA,authentication);
+
+		return CompletableFuture
+				.supplyAsync(() -> new ResponseEntity<>(response, HttpStatus.valueOf(response.getCodigo())));
+	}
+	@SuppressWarnings("unused")
+	private CompletableFuture<Object> fallbackConsultarById(@PathVariable Integer id, Authentication authentication,
+			CallNotPermittedException e) throws IOException {
+		Response<?> response = providerRestTemplate.respuestaProvider(e.getMessage());
+		 logUtil.crearArchivoLog(Level.INFO.toString(),this.getClass().getSimpleName(),this.getClass().getPackage().toString(),e.getMessage(),CONSULTA,authentication);
+
+		return CompletableFuture
+				.supplyAsync(() -> new ResponseEntity<>(response, HttpStatus.valueOf(response.getCodigo())));
+	}
+
+	@SuppressWarnings("unused")
+	private CompletableFuture<Object> fallbackConsultarById(@PathVariable Integer id, Authentication authentication,
+			RuntimeException e) throws IOException {
+		Response<?> response = providerRestTemplate.respuestaProvider(e.getMessage());
+		 logUtil.crearArchivoLog(Level.INFO.toString(),this.getClass().getSimpleName(),this.getClass().getPackage().toString(),e.getMessage(),CONSULTA,authentication);
+
+		return CompletableFuture
+				.supplyAsync(() -> new ResponseEntity<>(response, HttpStatus.valueOf(response.getCodigo())));
+	}
+
+	@SuppressWarnings("unused")
+	private CompletableFuture<Object> fallbackConsultarById(@PathVariable Integer id, Authentication authentication,
+			NumberFormatException e) throws IOException {
+		Response<?> response = providerRestTemplate.respuestaProvider(e.getMessage());
+		 logUtil.crearArchivoLog(Level.INFO.toString(),this.getClass().getSimpleName(),this.getClass().getPackage().toString(),e.getMessage(),CONSULTA,authentication);
+
+		return CompletableFuture
+				.supplyAsync(() -> new ResponseEntity<>(response, HttpStatus.valueOf(response.getCodigo())));
+	}
+
+	
 	
 	
 	/**

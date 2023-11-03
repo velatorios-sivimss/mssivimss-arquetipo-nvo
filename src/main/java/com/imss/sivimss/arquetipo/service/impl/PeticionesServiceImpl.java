@@ -9,12 +9,9 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Service;
 
-import com.google.gson.Gson;
-import com.imss.sivimss.arquetipo.model.dto.VelatorioDTO;
-import com.imss.sivimss.arquetipo.model.entity.VelatorioEntity;
+import com.imss.sivimss.arquetipo.model.request.Persona;
 import com.imss.sivimss.arquetipo.model.request.UsuarioDto;
 import com.imss.sivimss.arquetipo.service.PeticionesService;
-import com.imss.sivimss.arquetipo.utils.ConsultasUtil;
 import com.imss.sivimss.arquetipo.utils.DatosRequestUtil;
 import com.imss.sivimss.arquetipo.utils.Response;
 
@@ -29,7 +26,7 @@ public class PeticionesServiceImpl implements PeticionesService {
 	private DatosRequestUtil datosUtil;
 	
 	@Autowired
-	private ConsultasUtil consultasUtil;
+	private ConsultasPersonas consultasUtil;
 	
 
 	@Override
@@ -37,13 +34,6 @@ public class PeticionesServiceImpl implements PeticionesService {
 		return consultasUtil.consultarById(id);
 	}
 	
-	@Override
-	public Response<Object>  consultarByIdPaginado(Map<String, Object> params, Integer id, Authentication authentication) throws IOException {
-		Integer pagina =  Integer.parseInt( params.get("pagina").toString() );
-		Integer tamanio =  Integer.parseInt( params.get("tamanio").toString() );
-		return consultasUtil.consultarByIdPaginado(id, pagina, tamanio);
-	}
-
 	@Override
 	public Response<Object> consultar(Authentication authentication) throws IOException {
 		return consultasUtil.consultar();
@@ -58,31 +48,24 @@ public class PeticionesServiceImpl implements PeticionesService {
 	}
 
 	@Override
-	public Response<Object> guardarDatos(String request, Authentication authentication) throws Throwable {
+	public Response<Object> guardarDatos(Persona request, Authentication authentication) throws Throwable {
 		UsuarioDto user = datosUtil.getUserData(authentication);
-		Gson gson = new Gson();
-		VelatorioEntity vel = gson.fromJson(request, VelatorioEntity.class);
-
-		return consultasUtil.guardarDatos(vel, user.getIdUsuario());
+		return consultasUtil.guardarDatos(request, user.getIdUsuario());
 		
 	}	
 
 	@Override
-	public Response<Object> actualizaDatos(String request, Authentication authentication) throws Throwable {
+	public Response<Object> actualizaDatos(Persona request, Authentication authentication) throws Throwable {
 		UsuarioDto user = datosUtil.getUserData(authentication);
-		Gson gson = new Gson();
-		VelatorioEntity vel = gson.fromJson(request, VelatorioEntity.class);
-		return consultasUtil.actualizarDatos(vel, user.getIdUsuario());
+		return consultasUtil.actualizarDatos(request, user.getIdUsuario());
 		
 	}
 
 	@Override
-	public Response<Object> borrarDatos(String request, Authentication authentication) throws Throwable {
+	public Response<Object> borrarDatos(Persona request, Authentication authentication) throws Throwable {
 		UsuarioDto user = datosUtil.getUserData(authentication);
-		Gson gson = new Gson();
-		VelatorioDTO vel = gson.fromJson(request, VelatorioDTO.class);
 
-		return consultasUtil.borrarDatos(vel.getIdVelatorio(), user.getIdUsuario());
+		return consultasUtil.borrarDatos(request.getIdPersona(), user.getIdUsuario());
 		
 	}
 

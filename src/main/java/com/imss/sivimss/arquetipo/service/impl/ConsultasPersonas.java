@@ -1,4 +1,4 @@
-package com.imss.sivimss.arquetipo.utils;
+package com.imss.sivimss.arquetipo.service.impl;
 
 import java.util.List;
 import java.util.Map;
@@ -11,28 +11,30 @@ import org.springframework.data.domain.PageImpl;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Component;
 
-import com.imss.sivimss.arquetipo.model.entity.VelatorioEntity;
-import com.imss.sivimss.arquetipo.repository.VelatorioRepository;
+import com.imss.sivimss.arquetipo.model.entity.PersonaEntity;
+import com.imss.sivimss.arquetipo.model.request.Persona;
+import com.imss.sivimss.arquetipo.repository.PersonaRepository;
+import com.imss.sivimss.arquetipo.utils.AppConstantes;
+import com.imss.sivimss.arquetipo.utils.DatosRequestUtil;
+import com.imss.sivimss.arquetipo.utils.Response;
 
 
 @Component
-public class ConsultasUtil {
+public class ConsultasPersonas {
 
 	@Autowired
-	private VelatorioRepository velatorioRepository;
+	private PersonaRepository personaRepository;
 	
-	@Autowired
-	private DatosRequestUtil datosRequestUtil;
 
 	public Response<Object> consultar() {
-		List<Map<String, Object>> velatorios = velatorioRepository.buscarVelatorio();
+		List<Map<String, Object>> velatorios = personaRepository.buscarPersonas();
 		return new Response<>(false, HttpStatus.OK.value(), AppConstantes.EXITO,velatorios);
 	}
 	public Response<Object>  consultaPaginado( Integer pagina, Integer tamanio) {
 
 		Pageable paginado = PageRequest.of(pagina, tamanio);
-		List<Map<String, Object>> resp = velatorioRepository.buscarVelatorioPaginado(paginado);
-		List<Map<String, Object>> respTotal = velatorioRepository.buscarVelatorioPaginadoTotal();
+		List<Map<String, Object>> resp = personaRepository.buscarVelatorioPaginado(paginado);
+		List<Map<String, Object>> respTotal = personaRepository.buscarVelatorioPaginadoTotal();
 		Page<Map<String, Object>> objetoMapeado;
 		Integer conteo =  Integer.parseInt( respTotal.get(0).get("conteo").toString() );
 		objetoMapeado = new PageImpl<>(resp, paginado, conteo);
@@ -41,14 +43,14 @@ public class ConsultasUtil {
 		return new Response<>(false, HttpStatus.OK.value(), AppConstantes.EXITO, objetoMapeado);
 	}
 	public Response<Object> consultarById (Integer id) {
-		List<Map<String, Object>> velatorios = velatorioRepository.buscarVelatorioFiltro(id);
+		List<Map<String, Object>> velatorios = personaRepository.buscarPersonaById(id);
 		return new Response<>(false, HttpStatus.OK.value(), AppConstantes.EXITO,velatorios);
 	}
 
 	public Response<Object> consultarByIdPaginado (Integer id, Integer pagina, Integer tamanio) {
 		Pageable paginado = PageRequest.of(pagina, tamanio);
-		List<Map<String, Object>> resp = velatorioRepository.buscarVelatorioFiltroPag(paginado, id);
-		List<Map<String, Object>> respTotal = velatorioRepository.buscarVelatorioFiltroPagTotal(id);
+		List<Map<String, Object>> resp = personaRepository.buscarVelatorioFiltroPag(paginado, id);
+		List<Map<String, Object>> respTotal = personaRepository.buscarVelatorioFiltroPagTotal(id);
 		Page<Map<String, Object>> objetoMapeado;
 		Integer conteo =  Integer.parseInt( respTotal.get(0).get("conteo").toString() );
 		objetoMapeado = new PageImpl<>(resp, paginado, conteo);
@@ -56,19 +58,19 @@ public class ConsultasUtil {
 		return new Response<>(false, HttpStatus.OK.value(), AppConstantes.EXITO,objetoMapeado);
 	}
 
-	public Response<Object> guardarDatos (VelatorioEntity velatorio, Integer idUsuarioAlta){
-		velatorioRepository.guardarVelatorio(velatorio, idUsuarioAlta);		
+	public Response<Object> guardarDatos (Persona persona, Integer idUsuarioAlta){
+		personaRepository.guardarPersona(persona, idUsuarioAlta);		
 		return new Response<>(false, HttpStatus.OK.value(), AppConstantes.EXITO,null);
 	}
 
-	public Response<Object> actualizarDatos (VelatorioEntity velatorio, Integer idUsuarioModifica){
-		velatorioRepository.actualizarVelatorio(velatorio, idUsuarioModifica);	
+	public Response<Object> actualizarDatos (Persona persona, Integer idUsuarioModifica){
+		personaRepository.actualizarPersona(persona, idUsuarioModifica);	
 		return new Response<>(false, HttpStatus.OK.value(), AppConstantes.EXITO,null);
 	}
 
-	public Response<Object> borrarDatos (Integer idVelatorio, Integer idUsuarioBaja){
+	public Response<Object> borrarDatos (int idPersona, Integer idUsuarioBaja){
 		
-		velatorioRepository.borrarVelatorio(idVelatorio,idUsuarioBaja);
+		personaRepository.borrarPersona(idPersona,idUsuarioBaja);
 		
 		return new Response<>(false, HttpStatus.OK.value(), AppConstantes.EXITO,null);
 	}
