@@ -12,6 +12,7 @@ import java.util.Map;
 import java.util.HashMap;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.repository.query.Param;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
@@ -52,32 +53,34 @@ public class ArqController2 {
 	
 	@GetMapping("/consulta/mappers")
 	public CompletableFuture<Object> consultaUsandoMappers(Authentication authentication)	throws Throwable {
-		Map<String, Object> params = new HashMap<>();
 		Response<Object> response = arq.consultaUsandoMappers();
 		return CompletableFuture.supplyAsync(() -> new ResponseEntity<>(response, HttpStatus.valueOf(response.getCodigo())));
 	}
 	
 	@GetMapping("/consulta/querynativa")
 	public CompletableFuture<Object> consultaUsandoQuerysNativas(Authentication authentication)	throws Throwable {
-		Map<String, Object> params = new HashMap<>();
 		Response<Object> response = arq.consultaUsandoQuerysNativas();
 		return CompletableFuture.supplyAsync(() -> new ResponseEntity<>(response, HttpStatus.valueOf(response.getCodigo())));
 	}
 	
 	@PostMapping("/insert/mappers")
 	public CompletableFuture<Object> nuevoRegistroUsandoMappersParam(@RequestBody PersonaNombres persona, Authentication authentication)	throws Throwable {
-		Map<String, Object> params = new HashMap<>();
 		Response<Object> response = arq.nuevoRegistroUsandoMappersParam(persona);
 		return CompletableFuture.supplyAsync(() -> new ResponseEntity<>(response, HttpStatus.valueOf(response.getCodigo())));
 	}
 	
 	@PostMapping("/insert/mappers/obj")
 	public CompletableFuture<Object> nuevoRegistroUsandoMappersObj(@RequestBody PersonaNombres persona, Authentication authentication)	throws Throwable {
-		Map<String, Object> params = new HashMap<>();
 		Response<Object> response = arq.nuevoRegistroUsandoMappersObj(persona);
 		return CompletableFuture.supplyAsync(() -> new ResponseEntity<>(response, HttpStatus.valueOf(response.getCodigo())));
 	}
 	
+	@PostMapping("/update/mappers/obj/{id}")
+	public CompletableFuture<Object> actualizarRegistroUsandoMappersObj(@RequestBody PersonaNombres persona,
+			@PathVariable int id, Authentication authentication)	throws Throwable {
+		Response<Object> response = arq.actualizarRegistroUsandoMappersObj(persona,id);
+		return CompletableFuture.supplyAsync(() -> new ResponseEntity<>(response, HttpStatus.valueOf(response.getCodigo())));
+	}
 	
 	
 	/*

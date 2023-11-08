@@ -189,7 +189,7 @@ public class ServiciosArquetipo implements PeticionesArquetipo {
 				aa.nuevoRegistroParam(persona.getNomPersona(), persona.getPrimerApellido(),
 						persona.getSegundoApellido(), nuevoRegistro);
 
-				session.commit();
+				
 				resp.setDatos(nuevoRegistro.getIdPersona());
 			} catch (Exception e) {
 				/*
@@ -207,6 +207,7 @@ public class ServiciosArquetipo implements PeticionesArquetipo {
 			 * La trydeclaración -with-resources cierra los recursos en automático, 
 			 * nunca esta de más cerrar manualmente la conexión 
 			 */
+			session.commit();
 			session.close();
 		}
 
@@ -257,7 +258,6 @@ public class ServiciosArquetipo implements PeticionesArquetipo {
 				 *  */
 				
 				personaMapper.nuevoRegistroObj(per);
-				session.commit();
 				resp.setDatos(per);
 			} catch (Exception e) {
 				/*
@@ -276,10 +276,41 @@ public class ServiciosArquetipo implements PeticionesArquetipo {
 			 * La trydeclaración -with-resources cierra los recursos en automático, 
 			 * nunca esta de más cerrar manualmente la conexión 
 			 */
+			session.commit();
 			session.close();
 		}
 
 		return new Response<>(false, HttpStatus.OK.value(), AppConstantes.EXITO, resp);
 	}
+
 	
+	public Response<Object> actualizarRegistroUsandoMappersObj(PersonaNombres persona, int id ) {
+		PersonaEntityMyBatis per = new PersonaEntityMyBatis();
+		
+		per.setNomPersona(persona.getNomPersona());
+		per.setPrimerApellido(persona.getPrimerApellido());
+		per.setSegundoApellido(persona.getSegundoApellido());
+		per.setIdPersona(id);
+		
+		Response<Object> resp = new Response<>();
+
+		try (SqlSession session = sqlSessionFactory.openSession()) {
+			
+			PersonaMapper personaMapper = session.getMapper(PersonaMapper.class);
+
+			try {
+				personaMapper.actualizarRegistroObj(per);
+				resp.setDatos(per);
+			} catch (Exception e) {	
+				session.rollback();
+				session.close();
+			}
+
+			session.commit();
+			session.close();
+		}
+
+		return new Response<>(false, HttpStatus.OK.value(), AppConstantes.EXITO, resp);
+	}
+
 }

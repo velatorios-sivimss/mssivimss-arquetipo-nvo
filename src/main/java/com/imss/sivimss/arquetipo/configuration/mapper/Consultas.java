@@ -22,8 +22,6 @@ public interface Consultas {
 	@SelectProvider(type = PureSqlProvider.class, method = "sql")
 	public List<Map<String, Object>> selectNativeQuery(String sql);
 
-	@SelectProvider(type = PureSqlProvider.class, method = "sql")
-	public List<Map<String, Object>> selectHashMap(String sql);
 
 
 }

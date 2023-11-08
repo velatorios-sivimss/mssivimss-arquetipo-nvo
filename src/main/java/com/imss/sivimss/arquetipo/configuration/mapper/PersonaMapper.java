@@ -3,6 +3,8 @@ package com.imss.sivimss.arquetipo.configuration.mapper;
 import org.apache.ibatis.annotations.Insert;
 import org.apache.ibatis.annotations.Options;
 import org.apache.ibatis.annotations.Param;
+import org.apache.ibatis.annotations.Update;
+
 import com.imss.sivimss.arquetipo.model.entity.PersonaEntityMyBatis;
 
 /*
@@ -58,4 +60,13 @@ public interface PersonaMapper {
 			+ "VALUES ( #{out.nomPersona},#{out.primerApellido},#{out.segundoApellido} )")
 	@Options(useGeneratedKeys = true,keyProperty = "out.idPersona", keyColumn="id")
 	public int nuevoRegistroObj(@Param("out")PersonaEntityMyBatis persona);
+	
+	@Update(value = ""
+			+ "UPDATE SVC_PERSONA  "
+			+ "SET  "
+			+ "	NOM_PERSONA=#{in.nomPersona}, "
+			+ "	NOM_PRIMER_APELLIDO=#{in.primerApellido}, "
+			+ "	NOM_SEGUNDO_APELLIDO=#{in.segundoApellido} "
+			+ "WHERE ID_PERSONA=#{in.idPersona}")
+	public int actualizarRegistroObj(@Param("in")PersonaEntityMyBatis persona);
 }
