@@ -104,15 +104,15 @@ public class ArqController {
 	 * Guardar
 	 * 
 	 */
-	@PostMapping("/guardar/persona")
-	@CircuitBreaker(name = "msflujo", fallbackMethod = "fallbackGuardar")
-	@Retry(name = "msflujo", fallbackMethod = "fallbackGuardar")
-	@TimeLimiter(name = "msflujo")
-	public CompletableFuture<Object> guardarDatos(@Valid @RequestBody Persona request,
-			Authentication authentication) throws Throwable {
-		Response<Object> response = peticionesService.guardarDatos(request,authentication);
-		return CompletableFuture.supplyAsync(() -> new ResponseEntity<>(response, HttpStatus.valueOf(response.getCodigo())));
-	}
+//	@PostMapping("/guardar/persona")
+//	@CircuitBreaker(name = "msflujo", fallbackMethod = "fallbackGuardar")
+//	@Retry(name = "msflujo", fallbackMethod = "fallbackGuardar")
+//	@TimeLimiter(name = "msflujo")
+//	public CompletableFuture<Object> guardarDatos(@Valid @RequestBody Persona request,
+//			Authentication authentication) throws Throwable {
+//		Response<Object> response = peticionesService.guardarDatos(request,authentication);
+//		return CompletableFuture.supplyAsync(() -> new ResponseEntity<>(response, HttpStatus.valueOf(response.getCodigo())));
+//	}
 
 	/*
 	 * Actualizar

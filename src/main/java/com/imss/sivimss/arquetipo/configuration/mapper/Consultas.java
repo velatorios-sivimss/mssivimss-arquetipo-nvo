@@ -9,7 +9,7 @@ import org.springframework.stereotype.Repository;
 
 
 @Repository
-public interface Consultas extends PersonaInterface{
+public interface Consultas {
 	static class PureSqlProvider{
         public String sql(String sql) {
             return sql;
@@ -20,7 +20,7 @@ public interface Consultas extends PersonaInterface{
         }
     }
 	@SelectProvider(type = PureSqlProvider.class, method = "sql")
-    public List<Object> select(String sql);
+	public List<Map<String, Object>> selectNativeQuery(String sql);
 
 	@SelectProvider(type = PureSqlProvider.class, method = "sql")
 	public List<Map<String, Object>> selectHashMap(String sql);

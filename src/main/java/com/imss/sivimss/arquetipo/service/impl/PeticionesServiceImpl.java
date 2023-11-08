@@ -47,12 +47,12 @@ public class PeticionesServiceImpl implements PeticionesService {
 		
 	}
 
-	@Override
-	public Response<Object> guardarDatos(Persona request, Authentication authentication) throws Throwable {
-		UsuarioDto user = datosUtil.getUserData(authentication);
-		return consultasUtil.guardarDatos(request, user.getIdUsuario());
-		
-	}	
+//	@Override
+//	public Response<Object> guardarDatos(Persona request, Authentication authentication) throws Throwable {
+//		UsuarioDto user = datosUtil.getUserData(authentication);
+//		return consultasUtil.guardarDatos(request, user.getIdUsuario());
+//		
+//	}	
 
 	@Override
 	public Response<Object> actualizaDatos(Persona request, Authentication authentication) throws Throwable {
@@ -71,7 +71,8 @@ public class PeticionesServiceImpl implements PeticionesService {
 	
 	@Override
 	public Response<Object> consultaMyBatis() throws Throwable {
-		return consultasUtil.consultaMyBatis();
+//		return consultasUtil.consultaMyBatis();
+		return null;
 		
 	}
 

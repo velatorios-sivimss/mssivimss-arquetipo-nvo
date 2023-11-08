@@ -27,7 +27,7 @@ public class ConsultasPersonas {
 	private PersonaRepository personaRepository;
 	
 	@Autowired
-	private ConsultasMyBatis consultasMyBatis;
+	private ServiciosArquetipo consultasMyBatis;
 	
 
 	public Response<Object> consultar() {
@@ -63,11 +63,11 @@ public class ConsultasPersonas {
 		return new Response<>(false, HttpStatus.OK.value(), AppConstantes.EXITO,objetoMapeado);
 	}
 
-	public Response<Object> guardarDatos (Persona persona, Integer idUsuarioAlta){
-	//	personaRepository.guardarPersona(persona, idUsuarioAlta);
-		consultasMyBatis.insertaPersona(persona, idUsuarioAlta);
-		return new Response<>(false, HttpStatus.OK.value(), AppConstantes.EXITO,null);
-	}
+//	public Response<Object> guardarDatos (Persona persona, Integer idUsuarioAlta){
+//	//	personaRepository.guardarPersona(persona, idUsuarioAlta);
+//		consultasMyBatis.insertaPersona(persona, idUsuarioAlta);
+//		return new Response<>(false, HttpStatus.OK.value(), AppConstantes.EXITO,null);
+//	}
 
 	public Response<Object> actualizarDatos (Persona persona, Integer idUsuarioModifica){
 		personaRepository.actualizarPersona(persona, idUsuarioModifica);	
@@ -81,11 +81,11 @@ public class ConsultasPersonas {
 		return new Response<>(false, HttpStatus.OK.value(), AppConstantes.EXITO,null);
 	}
 
-	public Response<Object> consultaMyBatis (){
-		
-		//consultasMyBatis.consultaPaginado(0,10);
-		
-		return new Response<>(false, HttpStatus.OK.value(), AppConstantes.EXITO,consultasMyBatis.consultaPaginado(0,10));
-	}
+//	public Response<Object> consultaMyBatis (){
+//		
+//		//consultasMyBatis.consultaPaginado(0,10);
+//		
+//		return new Response<>(false, HttpStatus.OK.value(), AppConstantes.EXITO,consultasMyBatis.consultaPaginado(0,10));
+//	}
 	
 }
