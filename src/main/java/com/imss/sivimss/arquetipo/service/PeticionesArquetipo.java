@@ -10,4 +10,5 @@ public interface PeticionesArquetipo {
 	public Response<Object> nuevoRegistroUsandoMappersParam( PersonaNombres persona) ;
 	public Response<Object>  nuevoRegistroUsandoMappersObj( PersonaNombres persona);
 	public Response<Object> actualizarRegistroUsandoMappersObj(PersonaNombres persona, int id );
+	public Response<Object> nuevoRegistroUsandoQuerysNativas(PersonaNombres persona);
 }
