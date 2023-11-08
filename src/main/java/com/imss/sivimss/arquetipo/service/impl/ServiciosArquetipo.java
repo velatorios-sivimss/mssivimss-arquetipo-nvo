@@ -37,7 +37,6 @@ public class ServiciosArquetipo implements PeticionesArquetipo {
 		try(SqlSession session = sqlSessionFactory.openSession()) {
 			OrdenesServicioMapper ods = session.getMapper(OrdenesServicioMapper.class);
 			result = ods.consultaArticulos();	
-			session.commit();
 		}
 		
 		return new Response<>(false, HttpStatus.OK.value(), AppConstantes.EXITO, result);
@@ -49,8 +48,7 @@ public class ServiciosArquetipo implements PeticionesArquetipo {
 		List<Map<String, Object>> result = new ArrayList<>();
 		try(SqlSession session = sqlSessionFactory.openSession()) {
 			Consultas consultas = session.getMapper(Consultas.class);
-			result = consultas.selectNativeQuery(query.queryGetArticulos());		
-			session.commit();
+			result = consultas.selectNativeQuery(query.queryGetArticulos());
 		}
 		
 		return new Response<>(false, HttpStatus.OK.value(), AppConstantes.EXITO, result);
