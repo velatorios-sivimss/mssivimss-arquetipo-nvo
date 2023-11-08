@@ -16,5 +16,6 @@ public interface PeticionesService {
 	Response<Object> guardarDatos(Persona request, Authentication authentication) throws Throwable;
 	Response<Object> actualizaDatos(Persona request, Authentication authentication) throws Throwable;
 	Response<Object> borrarDatos(Persona request, Authentication authentication) throws Throwable;
+	Response<Object> consultaMyBatis() throws Throwable;
 	
 }

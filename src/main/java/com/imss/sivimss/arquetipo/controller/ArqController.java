@@ -57,9 +57,6 @@ public class ArqController {
 
 	private static final String CONSULTA = "consulta";
 
-
-	private static final Object Persona = null;
-
 	@GetMapping("/buscar/persona/{id}")
 	@CircuitBreaker(name = "msflujo", fallbackMethod = "fallbackConsultarById")
 	@Retry(name = "msflujo", fallbackMethod = "fallbackConsultarById")
@@ -71,9 +68,6 @@ public class ArqController {
 	
 
 	@GetMapping("/buscar/persona/paginado")
-	@CircuitBreaker(name = "msflujo", fallbackMethod = "fallbackconsultaPaginado")
-	@Retry(name = "msflujo", fallbackMethod = "fallbackconsultaPaginado")
-	@TimeLimiter(name = "msflujo")
 	public CompletableFuture<Object> consultarPaginado(
 			@RequestParam(defaultValue = AppConstantes.NUMERO_DE_PAGINA) Integer pagina
 			,@RequestParam(defaultValue = AppConstantes.TAMANIO_PAGINA) Integer tamanio
@@ -81,7 +75,8 @@ public class ArqController {
 		Map<String, Object> params = new HashMap<>();
 		params.put(PAGINA, pagina);
 		params.put(TAMANIO, tamanio);
-		Response<Object> response = peticionesService.consultarPaginado(params, authentication);
+		//Response<Object> response = peticionesService.consultarPaginado(params, authentication);
+		Response<Object> response = peticionesService.consultaMyBatis();
 		return CompletableFuture.supplyAsync(() -> new ResponseEntity<>(response, HttpStatus.valueOf(response.getCodigo())));
 	}
 	
@@ -294,6 +289,7 @@ public class ArqController {
 				.supplyAsync(() -> new ResponseEntity<>(response, HttpStatus.valueOf(response.getCodigo())));
 	}
 
+	@SuppressWarnings("unused")
 	private CompletableFuture<Object> fallbackPersona( @RequestBody Persona request,
 			CallNotPermittedException e) throws IOException {
 	    logUtil.crearArchivoLog(Level.INFO.toString(), this.getClass().getSimpleName(), this.getClass().getPackage().toString(), "Resiliencia", AppConstantes.CONSULTA, null);
@@ -301,6 +297,7 @@ public class ArqController {
 		return CompletableFuture.supplyAsync(() -> new ResponseEntity<>(request, HttpStatus.valueOf(200)));
 	}	
 	
+	@SuppressWarnings("unused")
 	private CompletableFuture<Object> fallbackPersona( @RequestBody Persona request,
 			RuntimeException e) throws IOException {
 	    logUtil.crearArchivoLog(Level.INFO.toString(), this.getClass().getSimpleName(), this.getClass().getPackage().toString(), "Resiliencia", AppConstantes.CONSULTA, null);
@@ -308,6 +305,7 @@ public class ArqController {
 		return CompletableFuture.supplyAsync(() -> new ResponseEntity<>(request, HttpStatus.valueOf(200)));
 	}
 
+	@SuppressWarnings("unused")
 	private CompletableFuture<Object> fallbackPersona( @RequestBody Persona request,
 			NumberFormatException e) throws IOException {
  

@@ -68,5 +68,11 @@ public class PeticionesServiceImpl implements PeticionesService {
 		return consultasUtil.borrarDatos(request.getIdPersona(), user.getIdUsuario());
 		
 	}
+	
+	@Override
+	public Response<Object> consultaMyBatis() throws Throwable {
+		return consultasUtil.consultaMyBatis();
+		
+	}
 
 }

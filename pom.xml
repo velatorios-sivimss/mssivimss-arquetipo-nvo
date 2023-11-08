@@ -21,6 +21,13 @@
 		<mock.version>5.9.0</mock.version>
 	</properties>
 	<dependencies>
+		
+		<!-- https://mvnrepository.com/artifact/org.mybatis/mybatis -->
+<dependency>
+<groupId>org.mybatis</groupId>
+<artifactId>mybatis</artifactId>
+<version>3.4.4</version>
+</dependency>
 		<!-- https://mvnrepository.com/artifact/org.springframework.boot/spring-boot-starter-validation -->
 		<dependency>
 		    <groupId>org.springframework.boot</groupId>

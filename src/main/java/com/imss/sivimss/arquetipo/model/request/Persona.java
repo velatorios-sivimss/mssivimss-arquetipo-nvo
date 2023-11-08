@@ -6,10 +6,13 @@ import javax.validation.constraints.Min;
 import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.Pattern;
 
+import org.apache.ibatis.annotations.MapKey;
+
 import lombok.Data;
 
 @Data
 public class Persona {
+	
 	@NotBlank(message = "Nombre no puede ser vacío")
     private String nomPersona;
 	
@@ -27,9 +30,11 @@ public class Persona {
 	
 	@Email(message = "Debe ser un correo válido")
 	private String correo;
-	
+
+
 	private int idPersona;
-	
+	@Pattern(regexp = "^([A-Z][AEIOUX][A-Z]{2}\\d{2}(?:0\\d|1[0-2])(?:[0-2]\\d|3[01])[HM](?:AS|B[CS]|C[CLMSH]|D[FG]|G[TR]|HG|JC|M[CNS]|N[ETL]|OC|PL|Q[TR]|S[PLR]|T[CSL]|VZ|YN|ZS)[B-DF-HJ-NP-TV-Z]{3}[A-Z\\d])(\\d)$"
+			, message = "Debe ser CURP Valido")
 	private String cveCURP;
 	private String cveNSS;
 	@NotBlank(message = "Primer Apellido no puede ser vacío")
