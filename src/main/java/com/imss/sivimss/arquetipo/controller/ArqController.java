@@ -10,6 +10,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -92,7 +93,7 @@ public class ArqController {
 	@CircuitBreaker(name = "msflujo", fallbackMethod = "fallbackUpdate")
 	@Retry(name = "msflujo", fallbackMethod = "fallbackUpdate")
 	@TimeLimiter(name = "msflujo")
-	public CompletableFuture<Object> actualizarRegistroUsandoMappersObj(@RequestBody PersonaNombres persona,
+	public CompletableFuture<Object> actualizarRegistroUsandoMappersObj(@Validated @RequestBody PersonaNombres persona,
 			@PathVariable("id") @Min(1) int id, Authentication authentication)	throws Throwable {
 		Response<Object> response = arq.actualizarRegistroUsandoMappersObj(persona,id);
 		return CompletableFuture.supplyAsync(() -> new ResponseEntity<>(response, HttpStatus.valueOf(response.getCodigo())));
