@@ -11,6 +11,7 @@ import org.springframework.data.domain.PageImpl;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Component;
 
+import com.imss.sivimss.arquetipo.configuration.mapper.Consultas;
 import com.imss.sivimss.arquetipo.model.entity.PersonaEntity;
 import com.imss.sivimss.arquetipo.model.request.Persona;
 import com.imss.sivimss.arquetipo.repository.PersonaRepository;
@@ -25,11 +26,15 @@ public class ConsultasPersonas {
 	@Autowired
 	private PersonaRepository personaRepository;
 	
+	@Autowired
+	private ServiciosArquetipo consultasMyBatis;
+	
 
 	public Response<Object> consultar() {
 		List<Map<String, Object>> velatorios = personaRepository.buscarPersonas();
 		return new Response<>(false, HttpStatus.OK.value(), AppConstantes.EXITO,velatorios);
 	}
+	
 	public Response<Object>  consultaPaginado( Integer pagina, Integer tamanio) {
 
 		Pageable paginado = PageRequest.of(pagina, tamanio);
@@ -58,10 +63,11 @@ public class ConsultasPersonas {
 		return new Response<>(false, HttpStatus.OK.value(), AppConstantes.EXITO,objetoMapeado);
 	}
 
-	public Response<Object> guardarDatos (Persona persona, Integer idUsuarioAlta){
-		personaRepository.guardarPersona(persona, idUsuarioAlta);		
-		return new Response<>(false, HttpStatus.OK.value(), AppConstantes.EXITO,null);
-	}
+//	public Response<Object> guardarDatos (Persona persona, Integer idUsuarioAlta){
+//	//	personaRepository.guardarPersona(persona, idUsuarioAlta);
+//		consultasMyBatis.insertaPersona(persona, idUsuarioAlta);
+//		return new Response<>(false, HttpStatus.OK.value(), AppConstantes.EXITO,null);
+//	}
 
 	public Response<Object> actualizarDatos (Persona persona, Integer idUsuarioModifica){
 		personaRepository.actualizarPersona(persona, idUsuarioModifica);	
@@ -74,4 +80,12 @@ public class ConsultasPersonas {
 		
 		return new Response<>(false, HttpStatus.OK.value(), AppConstantes.EXITO,null);
 	}
+
+//	public Response<Object> consultaMyBatis (){
+//		
+//		//consultasMyBatis.consultaPaginado(0,10);
+//		
+//		return new Response<>(false, HttpStatus.OK.value(), AppConstantes.EXITO,consultasMyBatis.consultaPaginado(0,10));
+//	}
+	
 }
