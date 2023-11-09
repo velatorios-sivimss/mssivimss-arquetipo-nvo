@@ -4,6 +4,8 @@ import java.io.IOException;
 import java.util.concurrent.CompletableFuture;
 import java.util.logging.Level;
 
+import javax.validation.constraints.Min;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -91,7 +93,7 @@ public class ArqController {
 	@Retry(name = "msflujo", fallbackMethod = "fallbackUpdate")
 	@TimeLimiter(name = "msflujo")
 	public CompletableFuture<Object> actualizarRegistroUsandoMappersObj(@RequestBody PersonaNombres persona,
-			@PathVariable int id, Authentication authentication)	throws Throwable {
+			@PathVariable("id") @Min(1) int id, Authentication authentication)	throws Throwable {
 		Response<Object> response = arq.actualizarRegistroUsandoMappersObj(persona,id);
 		return CompletableFuture.supplyAsync(() -> new ResponseEntity<>(response, HttpStatus.valueOf(response.getCodigo())));
 	}
