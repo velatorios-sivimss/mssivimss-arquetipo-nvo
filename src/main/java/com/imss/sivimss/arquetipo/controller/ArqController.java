@@ -67,7 +67,7 @@ public class ArqController {
 	@CircuitBreaker(name = "msflujo", fallbackMethod = "fallbackInsert")
 	@Retry(name = "msflujo", fallbackMethod = "fallbackInsert")
 	@TimeLimiter(name = "msflujo")
-	public CompletableFuture<Object> nuevoRegistroUsandoMappersParam(@RequestBody PersonaNombres persona, Authentication authentication)	throws Throwable {
+	public CompletableFuture<Object> nuevoRegistroUsandoMappersParam(@Validated @RequestBody PersonaNombres persona, Authentication authentication)	throws Throwable {
 		Response<Object> response = arq.nuevoRegistroUsandoMappersParam(persona);
 		return CompletableFuture.supplyAsync(() -> new ResponseEntity<>(response, HttpStatus.valueOf(response.getCodigo())));
 	}

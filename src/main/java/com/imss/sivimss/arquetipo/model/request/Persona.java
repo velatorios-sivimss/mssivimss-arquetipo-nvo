@@ -49,7 +49,7 @@ public class Persona {
 			, message = "Debe ser CURP Valido")
 	private String cveCURP;
 	
-	@Pattern(regexp = "/^(\\d{2})(\\d{2})(\\d{2})\\d{5}$/", message = "Debe ser CURP Valido")
+	@Pattern(regexp = "/^(\\d{2})(\\d{2})(\\d{2})\\d{5}$/", message = "Debe ser NSS Valido")
 	private String cveNSS;
 	
 	@Min(1)
