@@ -1,4 +1,4 @@
-package com.imss.sivimss.arquetipo.service.impl;
+package com.imss.sivimss.arquetipo.service.beans;
 
 import org.springframework.stereotype.Service;
 
@@ -80,12 +80,6 @@ public class ServiciosQuerysArquetipo {
 		
 	}
 
-	public String queryInsert(  String nombre, String apePaterno, String apeMaterno) {
-
-		return "INSERT INTO `SVC_PERSONA`(`NOM_PERSONA`, `NOM_PRIMER_APELLIDO`, `NOM_SEGUNDO_APELLIDO`) "
-				+ "VALUES (\' #{nombre}\',\'#{apePaterno}\',\'#{apeMaterno}\' )".replace("#{nombre}", nombre)
-				.replace("#{apePaterno}", apePaterno).replace("#{apeMaterno}", apeMaterno);
-
-	}
+	
 	
 }

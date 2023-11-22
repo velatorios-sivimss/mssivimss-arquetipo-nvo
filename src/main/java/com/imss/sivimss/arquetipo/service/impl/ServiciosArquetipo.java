@@ -16,6 +16,7 @@ import com.imss.sivimss.arquetipo.configuration.mapper.PersonaMapper;
 import com.imss.sivimss.arquetipo.model.entity.PersonaEntityMyBatis;
 import com.imss.sivimss.arquetipo.model.request.PersonaNombres;
 import com.imss.sivimss.arquetipo.service.PeticionesArquetipo;
+import com.imss.sivimss.arquetipo.service.beans.ServiciosQuerysArquetipo;
 import com.imss.sivimss.arquetipo.utils.AppConstantes;
 import com.imss.sivimss.arquetipo.utils.Response;
 
