@@ -75,40 +75,6 @@ public class ArqController {
 	}
 	
 	
-	/* NO VAN */
-	
-	@GetMapping("/consulta/mappers")
-	@CircuitBreaker(name = "msflujo", fallbackMethod = "fallbackConsulta")
-	@Retry(name = "msflujo", fallbackMethod = "fallbackConsulta")
-	@TimeLimiter(name = "msflujo")
-	public CompletableFuture<Object> consultaUsandoMappers(Authentication authentication)	throws IOException {
-		Response<Object> response = arq.consultaUsandoMappers();
-		return CompletableFuture.supplyAsync(() -> new ResponseEntity<>(response, HttpStatus.valueOf(response.getCodigo())));
-	}
-	
-	
-	
-	@PostMapping("/insert/mappers")
-	@CircuitBreaker(name = "msflujo", fallbackMethod = "fallbackInsert")
-	@Retry(name = "msflujo", fallbackMethod = "fallbackInsert")
-	@TimeLimiter(name = "msflujo")
-	public CompletableFuture<Object> nuevoRegistroUsandoMappersParam(@RequestBody PersonaNombres persona, Authentication authentication)	throws Throwable {
-		Response<Object> response = arq.nuevoRegistroUsandoMappersParam(persona);
-		return CompletableFuture.supplyAsync(() -> new ResponseEntity<>(response, HttpStatus.valueOf(response.getCodigo())));
-	}
-
-	@PostMapping("/insert/querynativa")
-	@CircuitBreaker(name = "msflujo", fallbackMethod = "fallbackInsert")
-	@Retry(name = "msflujo", fallbackMethod = "fallbackInsert")
-	@TimeLimiter(name = "msflujo")
-	public CompletableFuture<Object> nuevoRegistroUsandoQueryNativa(@RequestBody PersonaNombres persona, Authentication authentication)	throws Throwable {
-		Response<Object> response = arq.nuevoRegistroUsandoQuerysNativas(persona);
-		return CompletableFuture.supplyAsync(() -> new ResponseEntity<>(response, HttpStatus.valueOf(response.getCodigo())));
-	}
-
-	
-	
-	
 	/*
 	 * 
 	 * FallBack

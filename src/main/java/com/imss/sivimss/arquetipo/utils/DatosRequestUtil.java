@@ -4,7 +4,6 @@ import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Component;
 
 import com.google.gson.Gson;
-import com.imss.sivimss.arquetipo.model.dto.VelatorioDTO;
 import com.imss.sivimss.arquetipo.model.request.UsuarioDto;
 
 @Component

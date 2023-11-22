@@ -8,26 +8,37 @@ import org.apache.ibatis.session.Configuration;
 import org.apache.ibatis.session.SqlSessionFactory;
 import org.apache.ibatis.session.SqlSessionFactoryBuilder;
 import org.apache.ibatis.transaction.jdbc.JdbcTransactionFactory;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.stereotype.Service;
 
 import com.imss.sivimss.arquetipo.configuration.mapper.Consultas;
-import com.imss.sivimss.arquetipo.configuration.mapper.OrdenesServicioMapper;
 import com.imss.sivimss.arquetipo.configuration.mapper.PersonaMapper;
 
+@Service
 public class MyBatisConfig {
-	private static String DRIVER = "org.mariadb.jdbc.Driver";
-	private static String URL= "jdbc:mysql://10.102.44.18:3306/SIVIBDDS";
-	private static String USERNAME= "SIVI_USER"; 
-	private static String PASSWORD= "51V1_US3R";
-	private static String ENVIROMENT= "Develop";
 	
-	public static SqlSessionFactory buildqlSessionFactory() {
+	@Value("${spring.datasource.driverClassName}") 
+	private String DRIVER;
+	
+	@Value("${spring.datasource.url}")
+	private String URL;
+	
+	@Value("${spring.datasource.username}")
+	private String USERNAME;
+	
+	@Value("${spring.datasource.password}")
+	private String PASSWORD;
+	
+	@Value("${enviroment}")
+	private String ENVIROMENT;
+	
+	public SqlSessionFactory buildqlSessionFactory() {
 	    DataSource dataSource = new PooledDataSource(DRIVER, URL, USERNAME, PASSWORD);
 
 	    Environment environment = new Environment(ENVIROMENT, new JdbcTransactionFactory(), dataSource);
 	        
 	    Configuration configuration = new Configuration(environment);
 	    configuration.addMapper(Consultas.class);
-	    configuration.addMapper(OrdenesServicioMapper.class);
 	    configuration.addMapper(PersonaMapper.class);
 
 	    

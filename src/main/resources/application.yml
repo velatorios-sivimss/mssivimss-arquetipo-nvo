@@ -92,4 +92,4 @@ resilience4j.timelimiter:
         timeout-duration: 3s
 
 ruta-log: 'C:/Users/opimentel/Documents/logs/Arquetipo/'
-
+enviroment: Develop
