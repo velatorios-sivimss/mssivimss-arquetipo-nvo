@@ -82,7 +82,10 @@ public interface OrdenesServicioMapper {
 			+ "INNER JOIN SVT_CONTRATO_ARTICULOS SCA ON  "
 			+ "    SCA.ID_CONTRATO = SC.ID_CONTRATO AND STI.ID_ARTICULO = SCA.ID_ARTICULO  "
 			+ "WHERE  "
-			+ "    SA.ID_CATEGORIA_ARTICULO = 1 AND STI.ID_VELATORIO = 1")
+			+ "    SA.ID_CATEGORIA_ARTICULO = 1 AND STI.ID_VELATORIO = 1"
+			+ ""
+			+ "#{condicion1} "
+			+ "")
 	public List<Map<String, Object>> consultaArticulos();
 	
 	

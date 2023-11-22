@@ -45,12 +45,13 @@ public class ArqController {
 	private static final String INSERT = "insert";
 	private static final String UPDATE = "update";
 	
-	@GetMapping("/consulta/mappers")
-	@CircuitBreaker(name = "msflujo", fallbackMethod = "fallbackConsulta")
-	@Retry(name = "msflujo", fallbackMethod = "fallbackConsulta")
+	/* SI VAN */
+	@PostMapping("/insert/mappers/obj")
+	@CircuitBreaker(name = "msflujo", fallbackMethod = "fallbackInsert")
+	@Retry(name = "msflujo", fallbackMethod = "fallbackInsert")
 	@TimeLimiter(name = "msflujo")
-	public CompletableFuture<Object> consultaUsandoMappers(Authentication authentication)	throws IOException {
-		Response<Object> response = arq.consultaUsandoMappers();
+	public CompletableFuture<Object> nuevoRegistroUsandoMappersObj(@RequestBody PersonaNombres persona, Authentication authentication)	throws Throwable {
+		Response<Object> response = arq.nuevoRegistroUsandoMappersObj(persona);
 		return CompletableFuture.supplyAsync(() -> new ResponseEntity<>(response, HttpStatus.valueOf(response.getCodigo())));
 	}
 	
@@ -62,6 +63,30 @@ public class ArqController {
 		Response<Object> response = arq.consultaUsandoQuerysNativas();
 		return CompletableFuture.supplyAsync(() -> new ResponseEntity<>(response, HttpStatus.valueOf(response.getCodigo())));
 	}
+	
+	@PostMapping("/update/mappers/obj/{id}")
+	@CircuitBreaker(name = "msflujo", fallbackMethod = "fallbackUpdate")
+	@Retry(name = "msflujo", fallbackMethod = "fallbackUpdate")
+	@TimeLimiter(name = "msflujo")
+	public CompletableFuture<Object> actualizarRegistroUsandoMappersObj(@Validated @RequestBody PersonaNombres persona,
+			@PathVariable("id") @Min(1) int id, Authentication authentication)	throws Throwable {
+		Response<Object> response = arq.actualizarRegistroUsandoMappersObj(persona,id);
+		return CompletableFuture.supplyAsync(() -> new ResponseEntity<>(response, HttpStatus.valueOf(response.getCodigo())));
+	}
+	
+	
+	/* NO VAN */
+	
+	@GetMapping("/consulta/mappers")
+	@CircuitBreaker(name = "msflujo", fallbackMethod = "fallbackConsulta")
+	@Retry(name = "msflujo", fallbackMethod = "fallbackConsulta")
+	@TimeLimiter(name = "msflujo")
+	public CompletableFuture<Object> consultaUsandoMappers(Authentication authentication)	throws IOException {
+		Response<Object> response = arq.consultaUsandoMappers();
+		return CompletableFuture.supplyAsync(() -> new ResponseEntity<>(response, HttpStatus.valueOf(response.getCodigo())));
+	}
+	
+	
 	
 	@PostMapping("/insert/mappers")
 	@CircuitBreaker(name = "msflujo", fallbackMethod = "fallbackInsert")
@@ -80,24 +105,8 @@ public class ArqController {
 		Response<Object> response = arq.nuevoRegistroUsandoQuerysNativas(persona);
 		return CompletableFuture.supplyAsync(() -> new ResponseEntity<>(response, HttpStatus.valueOf(response.getCodigo())));
 	}
-	@PostMapping("/insert/mappers/obj")
-	@CircuitBreaker(name = "msflujo", fallbackMethod = "fallbackInsert")
-	@Retry(name = "msflujo", fallbackMethod = "fallbackInsert")
-	@TimeLimiter(name = "msflujo")
-	public CompletableFuture<Object> nuevoRegistroUsandoMappersObj(@RequestBody PersonaNombres persona, Authentication authentication)	throws Throwable {
-		Response<Object> response = arq.nuevoRegistroUsandoMappersObj(persona);
-		return CompletableFuture.supplyAsync(() -> new ResponseEntity<>(response, HttpStatus.valueOf(response.getCodigo())));
-	}
+
 	
-	@PostMapping("/update/mappers/obj/{id}")
-	@CircuitBreaker(name = "msflujo", fallbackMethod = "fallbackUpdate")
-	@Retry(name = "msflujo", fallbackMethod = "fallbackUpdate")
-	@TimeLimiter(name = "msflujo")
-	public CompletableFuture<Object> actualizarRegistroUsandoMappersObj(@Validated @RequestBody PersonaNombres persona,
-			@PathVariable("id") @Min(1) int id, Authentication authentication)	throws Throwable {
-		Response<Object> response = arq.actualizarRegistroUsandoMappersObj(persona,id);
-		return CompletableFuture.supplyAsync(() -> new ResponseEntity<>(response, HttpStatus.valueOf(response.getCodigo())));
-	}
 	
 	
 	/*
