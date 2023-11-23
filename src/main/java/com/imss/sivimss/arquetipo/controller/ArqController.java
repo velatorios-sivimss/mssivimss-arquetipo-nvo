@@ -77,10 +77,11 @@ public class ArqController {
 	}
 	
 	@PostMapping("/consulta/paginada")
-	//@CircuitBreaker(name = "msflujo", fallbackMethod = "fallbackUpdate")
-	//@Retry(name = "msflujo", fallbackMethod = "fallbackUpdate")
-	//@TimeLimiter(name = "msflujo")
-	public CompletableFuture<Object> paginadoGenerico(@Validated @RequestBody Paginado paginado, Authentication authentication) throws Throwable {
+	@CircuitBreaker(name = "msflujo", fallbackMethod = "fallbackConsultaPaginada")
+	@Retry(name = "msflujo", fallbackMethod = "fallbackConsultaPaginada")
+	@TimeLimiter(name = "msflujo")
+	public CompletableFuture<Object> paginadoGenerico(@Validated @RequestBody Paginado paginado, 
+			Authentication authentication) throws Throwable {
 		
 		Response<Object> response = arq.paginadoGenerico(paginado);
 		return CompletableFuture.supplyAsync(() -> new ResponseEntity<>(response, HttpStatus.valueOf(response.getCodigo())));
@@ -93,6 +94,15 @@ public class ArqController {
 	 * 
 	 */
 	
+	@SuppressWarnings("unused")
+	private CompletableFuture<Object> fallbackConsultaPaginada(@RequestBody Paginado paginado,Authentication authentication,
+			CallNotPermittedException e) throws Throwable {
+		Response<?> response = providerRestTemplate.respuestaProvider(e.getMessage());
+		 logUtil.crearArchivoLog(Level.INFO.toString(),this.getClass().getSimpleName(),this.getClass().getPackage().toString(),e.getMessage(),CONSULTA,authentication);
+
+		return CompletableFuture
+				.supplyAsync(() -> new ResponseEntity<>(response, HttpStatus.valueOf(response.getCodigo())));
+	}
 
 	@SuppressWarnings("unused")
 	private CompletableFuture<Object> fallbackConsulta(Authentication authentication,

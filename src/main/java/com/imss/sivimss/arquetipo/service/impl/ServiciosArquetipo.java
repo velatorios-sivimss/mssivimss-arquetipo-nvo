@@ -18,7 +18,7 @@ import com.imss.sivimss.arquetipo.model.entity.PersonaEntityMyBatis;
 import com.imss.sivimss.arquetipo.model.request.Paginado;
 import com.imss.sivimss.arquetipo.model.request.PersonaNombres;
 import com.imss.sivimss.arquetipo.service.PeticionesArquetipo;
-import com.imss.sivimss.arquetipo.service.beans.ServiciosQuerysArquetipo;
+import com.imss.sivimss.arquetipo.service.beans.BeanQuerys;
 import com.imss.sivimss.arquetipo.utils.AppConstantes;
 import com.imss.sivimss.arquetipo.utils.PaginadoUtil;
 import com.imss.sivimss.arquetipo.utils.Response;
@@ -30,7 +30,7 @@ import lombok.extern.java.Log;
 public class ServiciosArquetipo implements PeticionesArquetipo {
 
 	@Autowired
-	private ServiciosQuerysArquetipo query;
+	private BeanQuerys query;
 
 	@Autowired
 	private MyBatisConfig myBatisConfig;
@@ -160,8 +160,8 @@ public class ServiciosArquetipo implements PeticionesArquetipo {
 	@Override
 	public Response<Object> paginadoGenerico(Paginado paginado) {
 		
-		Page<Map<String, Object>> objetoMapeado = paginadoUtil.paginado(paginado.getPagina(), paginado.getTamanio(), query.queryTodosArticulos());
-		return new Response<>(false, HttpStatus.OK.value(), AppConstantes.EXITO, objetoMapeado);
+		Page<Map<String, Object>> objetoPaginado = paginadoUtil.paginado(paginado.getPagina(), paginado.getTamanio(), query.queryTodosArticulos());
+		return new Response<>(false, HttpStatus.OK.value(), AppConstantes.EXITO, objetoPaginado);
 		
 	}
 
