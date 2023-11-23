@@ -5,7 +5,6 @@ import java.util.concurrent.CompletableFuture;
 import java.util.logging.Level;
 
 import javax.validation.constraints.Min;
-
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -18,26 +17,29 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-
+import com.imss.sivimss.arquetipo.model.request.Paginado;
 import com.imss.sivimss.arquetipo.model.request.PersonaNombres;
 import com.imss.sivimss.arquetipo.service.PeticionesArquetipo;
 import com.imss.sivimss.arquetipo.utils.LogUtil;
 import com.imss.sivimss.arquetipo.utils.ProviderServiceRestTemplate;
 import com.imss.sivimss.arquetipo.utils.Response;
-
 import io.github.resilience4j.circuitbreaker.CallNotPermittedException;
 import io.github.resilience4j.circuitbreaker.annotation.CircuitBreaker;
 import io.github.resilience4j.retry.annotation.Retry;
 import io.github.resilience4j.timelimiter.annotation.TimeLimiter;
+import lombok.AllArgsConstructor;
 
+@AllArgsConstructor
 @RestController
 @RequestMapping("/arquetipo")
 public class ArqController {
+	
 	@Autowired
 	private PeticionesArquetipo arq;
 
 	@Autowired
 	private ProviderServiceRestTemplate providerRestTemplate;
+	
 	@Autowired
 	private LogUtil logUtil;
 
@@ -74,6 +76,16 @@ public class ArqController {
 		return CompletableFuture.supplyAsync(() -> new ResponseEntity<>(response, HttpStatus.valueOf(response.getCodigo())));
 	}
 	
+	@PostMapping("consulta/paginada")
+	@CircuitBreaker(name = "msflujo", fallbackMethod = "fallbackUpdate")
+	@Retry(name = "msflujo", fallbackMethod = "fallbackUpdate")
+	@TimeLimiter(name = "msflujo")
+	public CompletableFuture<Object> paginadoGenerico(@Validated @RequestBody Paginado paginado) throws Throwable {
+		
+		Response<Object> response = arq.paginadoGenerico(paginado);
+		return CompletableFuture.supplyAsync(() -> new ResponseEntity<>(response, HttpStatus.valueOf(response.getCodigo())));
+
+	}
 	
 	/*
 	 * 
