@@ -8,9 +8,6 @@ import org.apache.ibatis.session.SqlSession;
 import org.apache.ibatis.session.SqlSessionFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
-import org.springframework.data.domain.PageImpl;
-import org.springframework.data.domain.PageRequest;
-import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 
@@ -23,6 +20,7 @@ import com.imss.sivimss.arquetipo.model.request.PersonaNombres;
 import com.imss.sivimss.arquetipo.service.PeticionesArquetipo;
 import com.imss.sivimss.arquetipo.service.beans.ServiciosQuerysArquetipo;
 import com.imss.sivimss.arquetipo.utils.AppConstantes;
+import com.imss.sivimss.arquetipo.utils.PaginadoUtil;
 import com.imss.sivimss.arquetipo.utils.Response;
 
 import lombok.extern.java.Log;
@@ -36,6 +34,9 @@ public class ServiciosArquetipo implements PeticionesArquetipo {
 
 	@Autowired
 	private MyBatisConfig myBatisConfig;
+	
+	@Autowired
+	private PaginadoUtil paginadoUtil;
 	
 	@Override
 	public Response<Object>  consultaUsandoQuerysNativas() {
@@ -159,27 +160,9 @@ public class ServiciosArquetipo implements PeticionesArquetipo {
 	@Override
 	public Response<Object> paginadoGenerico(Paginado paginado) {
 		
-		Page<Map<String, Object>> objetoMapeado = null;
-		SqlSessionFactory sqlSessionFactory = myBatisConfig.buildqlSessionFactory();
-		String queryPage = paginado.getQuery() + " LIMIT " + (paginado.getPagina()*paginado.getTamanio()) + ", " + paginado.getTamanio();
-		String query = "SELECT COUNT(*) AS conteo FROM (" + paginado.getQuery() + ") tem";
-		List<Map<String, Object>> resp;
-		List<Map<String, Object>> respTotal;
-		Pageable pageable = PageRequest.of(paginado.getPagina(), paginado.getTamanio());
-		
-		
-		try(SqlSession session = sqlSessionFactory.openSession()) {
-			
-			Consultas consultas = session.getMapper(Consultas.class);
-			resp = consultas.selectNativeQuery(queryPage);
-			respTotal = consultas.selectNativeQuery(query);
-			
-			Integer conteo =  Integer.parseInt( respTotal.get(0).get("conteo").toString() );
-			objetoMapeado = new PageImpl<>(resp, pageable, conteo);
-		}
-		
-		
+		Page<Map<String, Object>> objetoMapeado = paginadoUtil.paginado(paginado.getPagina(), paginado.getTamanio(), query.queryTodosArticulos());
 		return new Response<>(false, HttpStatus.OK.value(), AppConstantes.EXITO, objetoMapeado);
+		
 	}
 
 }

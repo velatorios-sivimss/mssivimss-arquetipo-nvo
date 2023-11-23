@@ -80,6 +80,13 @@ public class ServiciosQuerysArquetipo {
 		
 	}
 
-	
+	public String queryTodosArticulos() {
+		return "SELECT "
+				+ "    SA.ID_ARTICULO AS idArticulo, "
+				+ "    SA.REF_ARTICULO AS nombreArticulo "
+				+ "FROM "
+				+ "    SVT_ARTICULO SA "
+				;
+	}
 	
 }

@@ -77,9 +77,9 @@ public class ArqController {
 	}
 	
 	@PostMapping("/consulta/paginada")
-	@CircuitBreaker(name = "msflujo", fallbackMethod = "fallbackUpdate")
-	@Retry(name = "msflujo", fallbackMethod = "fallbackUpdate")
-	@TimeLimiter(name = "msflujo")
+	//@CircuitBreaker(name = "msflujo", fallbackMethod = "fallbackUpdate")
+	//@Retry(name = "msflujo", fallbackMethod = "fallbackUpdate")
+	//@TimeLimiter(name = "msflujo")
 	public CompletableFuture<Object> paginadoGenerico(@Validated @RequestBody Paginado paginado, Authentication authentication) throws Throwable {
 		
 		Response<Object> response = arq.paginadoGenerico(paginado);
