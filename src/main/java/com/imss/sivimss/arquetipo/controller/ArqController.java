@@ -76,11 +76,11 @@ public class ArqController {
 		return CompletableFuture.supplyAsync(() -> new ResponseEntity<>(response, HttpStatus.valueOf(response.getCodigo())));
 	}
 	
-	@PostMapping("consulta/paginada")
+	@PostMapping("/consulta/paginada")
 	@CircuitBreaker(name = "msflujo", fallbackMethod = "fallbackUpdate")
 	@Retry(name = "msflujo", fallbackMethod = "fallbackUpdate")
 	@TimeLimiter(name = "msflujo")
-	public CompletableFuture<Object> paginadoGenerico(@Validated @RequestBody Paginado paginado) throws Throwable {
+	public CompletableFuture<Object> paginadoGenerico(@Validated @RequestBody Paginado paginado, Authentication authentication) throws Throwable {
 		
 		Response<Object> response = arq.paginadoGenerico(paginado);
 		return CompletableFuture.supplyAsync(() -> new ResponseEntity<>(response, HttpStatus.valueOf(response.getCodigo())));

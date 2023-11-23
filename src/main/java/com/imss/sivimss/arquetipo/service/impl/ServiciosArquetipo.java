@@ -30,8 +30,6 @@ import lombok.extern.java.Log;
 @Log
 @Service
 public class ServiciosArquetipo implements PeticionesArquetipo {
-	
-	//private SqlSessionFactory sqlSessionFactory = MyBatisConfig.buildqlSessionFactory();
 
 	@Autowired
 	private ServiciosQuerysArquetipo query;
@@ -39,12 +37,12 @@ public class ServiciosArquetipo implements PeticionesArquetipo {
 	@Autowired
 	private MyBatisConfig myBatisConfig;
 	
-	private SqlSessionFactory sqlSessionFactory = myBatisConfig.buildqlSessionFactory();
-	
 	@Override
 	public Response<Object>  consultaUsandoQuerysNativas() {
 		
 		List<Map<String, Object>> result = new ArrayList<>();
+		SqlSessionFactory sqlSessionFactory = myBatisConfig.buildqlSessionFactory();
+		
 		try(SqlSession session = sqlSessionFactory.openSession()) {
 			Consultas consultas = session.getMapper(Consultas.class);
 			result = consultas.selectNativeQuery(query.queryGetArticulos());
@@ -63,6 +61,7 @@ public class ServiciosArquetipo implements PeticionesArquetipo {
 		 * Creamos una instancia del objeto/representación del nuevo registro 
 		 */
 		PersonaEntityMyBatis per = new PersonaEntityMyBatis();
+		SqlSessionFactory sqlSessionFactory = myBatisConfig.buildqlSessionFactory();
 		
 		/* Realizamos el mapeo de datos desde nuestro request  */
 		per.setNomPersona(persona.getNomPersona());
@@ -126,7 +125,9 @@ public class ServiciosArquetipo implements PeticionesArquetipo {
 
 	@Override
 	public Response<Object> actualizarRegistroUsandoMappersObj(PersonaNombres persona, int id ) {
+		
 		PersonaEntityMyBatis per = new PersonaEntityMyBatis();
+		SqlSessionFactory sqlSessionFactory = myBatisConfig.buildqlSessionFactory();
 		
 		per.setNomPersona(persona.getNomPersona());
 		per.setPrimerApellido(persona.getPrimerApellido());
@@ -157,7 +158,9 @@ public class ServiciosArquetipo implements PeticionesArquetipo {
 
 	@Override
 	public Response<Object> paginadoGenerico(Paginado paginado) {
+		
 		Page<Map<String, Object>> objetoMapeado = null;
+		SqlSessionFactory sqlSessionFactory = myBatisConfig.buildqlSessionFactory();
 		String queryPage = paginado.getQuery() + " LIMIT " + (paginado.getPagina()*paginado.getTamanio()) + ", " + paginado.getTamanio();
 		String query = "SELECT COUNT(*) AS conteo FROM (" + paginado.getQuery() + ") tem";
 		List<Map<String, Object>> resp;
