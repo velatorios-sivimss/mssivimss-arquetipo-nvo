@@ -17,7 +17,7 @@ public class BadRequestException extends RuntimeException {
 
 	private final String datos;
 
-	private boolean error;
+	private final boolean error;
 
 	public BadRequestException(HttpStatus codigo, String mensaje) {
 		super(mensaje);

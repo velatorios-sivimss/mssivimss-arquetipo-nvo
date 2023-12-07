@@ -1,6 +1,5 @@
 package com.imss.sivimss.arquetipo.utils;
 
-import java.io.IOException;
 import java.util.Collections;
 import java.util.Map;
 import java.util.StringTokenizer;
@@ -11,12 +10,10 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Service;
-import org.springframework.web.multipart.MultipartFile;
 
 
 import com.google.gson.Gson;
 import com.imss.sivimss.arquetipo.security.jwt.JwtTokenProvider;
-
 @Service
 public class ProviderServiceRestTemplate {
 
@@ -28,33 +25,35 @@ public class ProviderServiceRestTemplate {
 
 	private static final Logger log = LoggerFactory.getLogger(ProviderServiceRestTemplate.class);
 
-	@SuppressWarnings("unchecked")
-	public Response<Object> consumirServicio(Map<String, Object> dato, String url, Authentication authentication)
-			throws IOException {
-		try {
-			return (Response<Object>) restTemplateUtil.sendPostRequestByteArrayToken(url,
+	public Response<Object> consumirServicio(Map<String, Object> dato, String url, Authentication authentication) {
+			Response<Object> respuestaGenerado =   restTemplateUtil.sendPostRequestByteArrayToken(url,
 					new EnviarDatosRequest(dato), jwtTokenProvider.createToken((String) authentication.getPrincipal()),
 					Response.class);
-		} catch (IOException exception) {
-			log.error("Ha ocurrido un error al recuperar la informacion");
-			throw exception;
-		}
+			return validarResponse(respuestaGenerado);
 	}
 
-	@SuppressWarnings("unchecked")
-	public Response<Object> consumirServicioArchivo(String datos, MultipartFile[] files, String url,
-			Authentication authentication) throws IOException {
-		try {
-			return (Response<Object>) restTemplateUtil.sendPostRequestByteArrayArchviosToken(url,
-					new EnviarDatosArchivosRequest(datos, files),
+	public Response<Object> consumirServicioReportes(Map<String, Object> dato,
+			String url, Authentication authentication) {
+			Response<Object> respuestaGenerado = restTemplateUtil.sendPostRequestByteArrayReportesToken(url,
+					new DatosReporteDTO(dato),
 					jwtTokenProvider.createToken((String) authentication.getPrincipal()), Response.class);
-		} catch (IOException exception) {
-			log.error("Ha ocurrido un error al recuperar la informacion");
-			throw exception;
-		}
+			return validarResponse(respuestaGenerado);
 	}
 
-	
+	public Response<Object> validarResponse(Response<Object> respuestaGenerado) {
+		String codigo = respuestaGenerado.getMensaje().substring(0, 3);
+		if (codigo.equals("500") || codigo.equals("404") || codigo.equals("400") || codigo.equals("403")) {
+			Gson gson = new Gson();
+			String mensaje = respuestaGenerado.getMensaje().substring(7, respuestaGenerado.getMensaje().length() - 1);
+
+			ErrorsMessageResponse apiExceptionResponse = gson.fromJson(mensaje, ErrorsMessageResponse.class);
+
+			respuestaGenerado = Response.builder().codigo((int) apiExceptionResponse.getCodigo()).error(true)
+					.mensaje(apiExceptionResponse.getMensaje()).datos(apiExceptionResponse.getDatos()).build();
+
+		}
+		return respuestaGenerado;
+	}
 
 	@SuppressWarnings("unchecked")
 	public Response<Object> respuestaProvider(String e) {
@@ -69,24 +68,10 @@ public class ProviderServiceRestTemplate {
 			String str = exeception.nextToken();
 			i++;
 			if (i == 2) {
-				String[] palabras = str.split("\\.");
-				for (String palabra : palabras) {
-					if ("BadRequestException".contains(palabra)) {
-						codigoError = HttpStatus.BAD_REQUEST.value();
-					} else if ("ResourceAccessException".contains(palabra)) {
-						codigoError = HttpStatus.INTERNAL_SERVER_ERROR.value();
-
-					}
-				}
+				codigoError = getError(str);				
 			} else if (i == 3) {
-
-				if (str.trim().chars().allMatch( Character::isDigit )) {
-					isExceptionResponseMs = 1;
-				}
-
-				mensaje.append(codigoError == HttpStatus.INTERNAL_SERVER_ERROR.value()
-						?AppConstantes.CIRCUITBREAKER
-						: str);
+				isExceptionResponseMs = esNumero(str);
+				mensaje.append(getCodigoError(codigoError, str));
 
 			} else if (i >= 4 && isExceptionResponseMs == 1) {
 				if (i == 4) {
@@ -96,22 +81,47 @@ public class ProviderServiceRestTemplate {
 
 			}
 		}
-		
+
 		Response<Object> response;
 		try {
-			response = isExceptionResponseMs == 1 && !mensaje.toString().trim().equals("")? gson.fromJson(mensaje.substring(2, mensaje.length() - 1), Response.class)
-				: new Response<>(true, codigoError,mensajeRespuesta(mensaje.toString().trim()) , Collections.emptyList());
-			
-			log.info("respuestaProvider error: {}",e);
+			response = isExceptionResponseMs == 1 && !mensaje.toString().trim().equals("")
+					? gson.fromJson(mensaje.substring(2, mensaje.length() - 1), Response.class)
+					: new Response<>(true, codigoError, mensajeRespuesta(mensaje.toString().trim()),
+							Collections.emptyList());
+			log.info("respuestaProvider error: {}", e);
 		} catch (Exception e2) {
-			log.info("respuestaProvider error: {}",e2.getMessage());
-			return new Response<>(true, HttpStatus.INTERNAL_SERVER_ERROR.value(), AppConstantes.OCURRIO_ERROR_GENERICO, Collections.emptyList());
+			log.info("respuestaProvider error: {}", e2.getMessage());
+			return new Response<>(true, HttpStatus.INTERNAL_SERVER_ERROR.value(), AppConstantes.OCURRIO_ERROR_GENERICO,
+					Collections.emptyList());
 		}
-		
+
 		return response;
 	}
-	
+
 	private String mensajeRespuesta(String e) {
-		return e.trim().equals("")?AppConstantes.CIRCUITBREAKER:e.trim();
+		return e.trim().equals("") ? AppConstantes.CIRCUITBREAKER : e.trim();
 	}
+	private int getError(String str) {
+		int returnVal = HttpStatus.INTERNAL_SERVER_ERROR.value();
+		String[] palabras = str.split("\\.");
+		for (String palabra : palabras) {
+			if ("BadRequestException".contains(palabra)) {
+				returnVal = HttpStatus.BAD_REQUEST.value();
+			} else if ("ResourceAccessException".contains(palabra)) {
+				returnVal = HttpStatus.INTERNAL_SERVER_ERROR.value();
+
+			}
+		}
+		return returnVal;
+	}
+	private int esNumero (String str) {
+		if(str.trim().chars().allMatch(Character::isDigit))
+			return 1;
+		else 
+			return 0;
+	}
+	private String getCodigoError (int codigoError, String str) {
+		return (codigoError == HttpStatus.INTERNAL_SERVER_ERROR.value()? AppConstantes.CIRCUITBREAKER : str);
+	}
+
 }

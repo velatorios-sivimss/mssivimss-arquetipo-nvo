@@ -16,7 +16,6 @@ import com.imss.sivimss.arquetipo.utils.AppConstantes;
 
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.ExpiredJwtException;
-import io.jsonwebtoken.Jws;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.MalformedJwtException;
 import io.jsonwebtoken.SignatureAlgorithm;
@@ -47,7 +46,8 @@ public class JwtTokenProvider {
 				+ "\"idOficina\":"	+ usuario.getIdOficina() + "," + "\"idUsuario\":" + usuario.getIdUsuario() + ","
 				+ "\"cveUsuario\":'"	+ usuario.getCveUsuario() + "'," + "\"cveMatricula\":'" + usuario.getCveMatricula() + "',"
 				+ "\"nombre\":'"	+ usuario.getNombre() + "'," + "\"curp\":'" + usuario.getCurp() + "',"
-				+ "\"idDelegacion\":" + usuario.getIdDelegacion()+ "}";			
+				+ "\"idDelegacion\":" + usuario.getIdDelegacion()+ ", \"idContratante\":" + usuario.getIdContratante()
+				+ ",\"idPersona\":" + usuario.getIdPersona() + "}";			
 		
 		Map<String, Object> claims = Jwts.claims().setSubject(datosUsuario);
 		
@@ -80,7 +80,7 @@ public class JwtTokenProvider {
 	public boolean validateToken(String authToken, HttpServletRequest request) {
 		try {
 		
-			Jws<Claims> claims = Jwts.parser().setSigningKey(jwtSecret).parseClaimsJws(authToken);
+					Jwts.parser().setSigningKey(jwtSecret).parseClaimsJws(authToken);
 			return true;
 		} catch (MalformedJwtException e) {
 			request.setAttribute(AppConstantes.STATUSEXCEPTION, AppConstantes.MALFORMEDJWTEXCEPTION);

@@ -29,6 +29,9 @@ spring:
        maximum-pool-size: 7
        minimum-idle: 10
 
+  environment: 'develop'
+  
+  
   main:
     allow-circular-references: true
 

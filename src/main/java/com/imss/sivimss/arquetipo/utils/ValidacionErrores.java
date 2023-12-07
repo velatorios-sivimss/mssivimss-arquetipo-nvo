@@ -5,6 +5,11 @@ import java.util.Map;
 
 import org.springframework.http.HttpStatus;
 
+import lombok.Getter;
+import lombok.Setter;
+
+@Getter
+@Setter
 public class ValidacionErrores {
 
 	private Map<String, String> errores;
@@ -16,38 +21,6 @@ public class ValidacionErrores {
 	private boolean error;
 
 	private Date fecha;
-
-	public Map<String, String> getErrores() {
-		return errores;
-	}
-
-	public void setErrores(Map<String, String> errores) {
-		this.errores = errores;
-	}
-
-	public String getMensaje() {
-		return mensaje;
-	}
-
-	public void setMensaje(String mensaje) {
-		this.mensaje = mensaje;
-	}
-
-	public long getCodigo() {
-		return codigo;
-	}
-
-	public void setCodigo(long codigo) {
-		this.codigo = codigo;
-	}
-
-	public boolean isError() {
-		return error;
-	}
-
-	public void setError(boolean error) {
-		this.error = error;
-	}
 
 	public ValidacionErrores(Map<String, String> errores, Date fecha) {
 		super();
