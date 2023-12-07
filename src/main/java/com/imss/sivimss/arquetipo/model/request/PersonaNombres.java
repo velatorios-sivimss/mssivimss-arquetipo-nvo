@@ -14,5 +14,6 @@ public class PersonaNombres {
 	
 	@NotBlank(message = "Segundo Apellido no puede ser vacío")
 	private String segundoApellido;
-	
+
+	private Integer idPersona;
 }

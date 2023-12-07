@@ -5,6 +5,7 @@ import java.util.concurrent.CompletableFuture;
 import java.util.logging.Level;
 
 import javax.validation.constraints.Min;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -17,29 +18,26 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-import com.imss.sivimss.arquetipo.model.request.Paginado;
+
 import com.imss.sivimss.arquetipo.model.request.PersonaNombres;
 import com.imss.sivimss.arquetipo.service.PeticionesArquetipo;
 import com.imss.sivimss.arquetipo.utils.LogUtil;
 import com.imss.sivimss.arquetipo.utils.ProviderServiceRestTemplate;
 import com.imss.sivimss.arquetipo.utils.Response;
+
 import io.github.resilience4j.circuitbreaker.CallNotPermittedException;
 import io.github.resilience4j.circuitbreaker.annotation.CircuitBreaker;
 import io.github.resilience4j.retry.annotation.Retry;
 import io.github.resilience4j.timelimiter.annotation.TimeLimiter;
-import lombok.AllArgsConstructor;
 
-@AllArgsConstructor
 @RestController
 @RequestMapping("/arquetipo")
 public class ArqController {
-	
 	@Autowired
 	private PeticionesArquetipo arq;
 
 	@Autowired
 	private ProviderServiceRestTemplate providerRestTemplate;
-	
 	@Autowired
 	private LogUtil logUtil;
 
@@ -47,13 +45,12 @@ public class ArqController {
 	private static final String INSERT = "insert";
 	private static final String UPDATE = "update";
 	
-	/* SI VAN */
-	@PostMapping("/insert/mappers/obj")
-	@CircuitBreaker(name = "msflujo", fallbackMethod = "fallbackInsert")
-	@Retry(name = "msflujo", fallbackMethod = "fallbackInsert")
+	@GetMapping("/consulta/mappers")
+	@CircuitBreaker(name = "msflujo", fallbackMethod = "fallbackConsulta")
+	@Retry(name = "msflujo", fallbackMethod = "fallbackConsulta")
 	@TimeLimiter(name = "msflujo")
-	public CompletableFuture<Object> nuevoRegistroUsandoMappersObj(@RequestBody PersonaNombres persona, Authentication authentication)	throws Throwable {
-		Response<Object> response = arq.nuevoRegistroUsandoMappersObj(persona);
+	public CompletableFuture<Object> consultaUsandoMappers(Authentication authentication) {
+		Response<Object> response = arq.consultaUsandoMappers();
 		return CompletableFuture.supplyAsync(() -> new ResponseEntity<>(response, HttpStatus.valueOf(response.getCodigo())));
 	}
 	
@@ -61,32 +58,57 @@ public class ArqController {
 	@CircuitBreaker(name = "msflujo", fallbackMethod = "fallbackConsulta")
 	@Retry(name = "msflujo", fallbackMethod = "fallbackConsulta")
 	@TimeLimiter(name = "msflujo")
-	public CompletableFuture<Object> consultaUsandoQuerysNativas(Authentication authentication)	throws Throwable {
+	public CompletableFuture<Object> consultaUsandoQuerysNativas(Authentication authentication) {
 		Response<Object> response = arq.consultaUsandoQuerysNativas();
 		return CompletableFuture.supplyAsync(() -> new ResponseEntity<>(response, HttpStatus.valueOf(response.getCodigo())));
 	}
 	
-	@PostMapping("/update/mappers/obj/{id}")
+	@PostMapping("/insert/mappers")
+	@CircuitBreaker(name = "msflujo", fallbackMethod = "fallbackInsert")
+	@Retry(name = "msflujo", fallbackMethod = "fallbackInsert")
+	@TimeLimiter(name = "msflujo")
+	public CompletableFuture<Object> nuevoRegistroUsandoMappersParam(@Validated @RequestBody PersonaNombres persona, Authentication authentication) {
+		Response<Object> response = arq.nuevoRegistroUsandoMappersParam(persona, authentication);
+		return CompletableFuture.supplyAsync(() -> new ResponseEntity<>(response, HttpStatus.valueOf(response.getCodigo())));
+	}
+
+	@PostMapping("/insert/querynativa")
+	@CircuitBreaker(name = "msflujo", fallbackMethod = "fallbackInsert")
+	@Retry(name = "msflujo", fallbackMethod = "fallbackInsert")
+	@TimeLimiter(name = "msflujo")
+	public CompletableFuture<Object> nuevoRegistroUsandoQueryNativa(@RequestBody PersonaNombres persona, Authentication authentication)	 {
+		Response<Object> response = arq.nuevoRegistroUsandoQuerysNativas(persona, authentication);
+		return CompletableFuture.supplyAsync(() -> new ResponseEntity<>(response, HttpStatus.valueOf(response.getCodigo())));
+	}
+	@PostMapping("/insert/mappers/obj")
+	@CircuitBreaker(name = "msflujo", fallbackMethod = "fallbackInsert")
+	@Retry(name = "msflujo", fallbackMethod = "fallbackInsert")
+	@TimeLimiter(name = "msflujo")
+	public CompletableFuture<Object> nuevoRegistroUsandoMappersObj(@RequestBody PersonaNombres persona, Authentication authentication) {
+		Response<Object> response = arq.nuevoRegistroUsandoMappersObj(persona, authentication);
+		return CompletableFuture.supplyAsync(() -> new ResponseEntity<>(response, HttpStatus.valueOf(response.getCodigo())));
+	}
+	
+	@PostMapping("/update/mappers/obj")
 	@CircuitBreaker(name = "msflujo", fallbackMethod = "fallbackUpdate")
 	@Retry(name = "msflujo", fallbackMethod = "fallbackUpdate")
 	@TimeLimiter(name = "msflujo")
 	public CompletableFuture<Object> actualizarRegistroUsandoMappersObj(@Validated @RequestBody PersonaNombres persona,
-			@PathVariable("id") @Min(1) int id, Authentication authentication)	throws Throwable {
-		Response<Object> response = arq.actualizarRegistroUsandoMappersObj(persona,id);
+			 Authentication authentication) {
+		Response<Object> response = arq.actualizarRegistroUsandoMappersObj(persona, authentication);
+		return CompletableFuture.supplyAsync(() -> new ResponseEntity<>(response, HttpStatus.valueOf(response.getCodigo())));
+	}
+
+	@PostMapping("/crear/migracion")
+	@CircuitBreaker(name = "msflujo", fallbackMethod = "fallbackUpdate")
+	@Retry(name = "msflujo", fallbackMethod = "fallbackUpdate")
+	@TimeLimiter(name = "msflujo")
+	public CompletableFuture<Object> crearMigracion(@Validated @RequestBody PersonaNombres persona,
+			 Authentication authentication) {
+		Response<Object> response = arq.crearMigracion(persona, authentication);
 		return CompletableFuture.supplyAsync(() -> new ResponseEntity<>(response, HttpStatus.valueOf(response.getCodigo())));
 	}
 	
-	@PostMapping("/consulta/paginada")
-	@CircuitBreaker(name = "msflujo", fallbackMethod = "fallbackConsultaPaginada")
-	@Retry(name = "msflujo", fallbackMethod = "fallbackConsultaPaginada")
-	@TimeLimiter(name = "msflujo")
-	public CompletableFuture<Object> paginadoGenerico(@Validated @RequestBody Paginado paginado, 
-			Authentication authentication) throws Throwable {
-		
-		Response<Object> response = arq.paginadoGenerico(paginado);
-		return CompletableFuture.supplyAsync(() -> new ResponseEntity<>(response, HttpStatus.valueOf(response.getCodigo())));
-
-	}
 	
 	/*
 	 * 
@@ -94,15 +116,6 @@ public class ArqController {
 	 * 
 	 */
 	
-	@SuppressWarnings("unused")
-	private CompletableFuture<Object> fallbackConsultaPaginada(@RequestBody Paginado paginado,Authentication authentication,
-			CallNotPermittedException e) throws Throwable {
-		Response<?> response = providerRestTemplate.respuestaProvider(e.getMessage());
-		 logUtil.crearArchivoLog(Level.INFO.toString(),this.getClass().getSimpleName(),this.getClass().getPackage().toString(),e.getMessage(),CONSULTA,authentication);
-
-		return CompletableFuture
-				.supplyAsync(() -> new ResponseEntity<>(response, HttpStatus.valueOf(response.getCodigo())));
-	}
 
 	@SuppressWarnings("unused")
 	private CompletableFuture<Object> fallbackConsulta(Authentication authentication,
@@ -126,7 +139,7 @@ public class ArqController {
 
 	@SuppressWarnings("unused")
 	private CompletableFuture<Object> fallbackUpdate(@RequestBody PersonaNombres persona,
-			@PathVariable int id, Authentication authentication,
+			 Authentication authentication,
 			CallNotPermittedException e) throws IOException {
 		Response<?> response = providerRestTemplate.respuestaProvider(e.getMessage());
 		 logUtil.crearArchivoLog(Level.INFO.toString(),this.getClass().getSimpleName(),this.getClass().getPackage().toString(),e.getMessage(),UPDATE,authentication);

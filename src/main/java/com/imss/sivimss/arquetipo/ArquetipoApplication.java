@@ -12,6 +12,9 @@ import org.springframework.web.client.RestTemplate;
 
 import com.imss.sivimss.arquetipo.utils.NoRedirectSimpleClientHttpRequestFactory;
 
+
+
+
 @SpringBootApplication
 @EnableCaching
 public class ArquetipoApplication {
@@ -19,6 +22,8 @@ public class ArquetipoApplication {
 	public static void main(String[] args) {
 		SpringApplication.run(ArquetipoApplication.class, args);
 	}
+
+	
 	
 	@Bean
 	public RestTemplate restTemplate() {
@@ -30,4 +35,6 @@ public class ArquetipoApplication {
 	public ModelMapper modelMapper() {
 		return new ModelMapper();
 	}
+	
+	
 }

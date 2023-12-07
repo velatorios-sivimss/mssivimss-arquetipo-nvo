@@ -14,86 +14,69 @@ import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.context.request.WebRequest;
 
-import com.imss.sivimss.arquetipo.utils.AppConstantes;
 import com.imss.sivimss.arquetipo.utils.ErrorsMessageResponse;
 import com.imss.sivimss.arquetipo.utils.ValidacionErrores;
-
-import io.github.resilience4j.timelimiter.configure.IllegalReturnTypeException;
-
+/**
+ * Clase principal para manejar las excepciones de la aplicacion
+ *
+ * @author Pablo Nolasco
+ * @puesto dev
+ * @date abril. 2023
+ */
 @ControllerAdvice // permite manejar exepciones handler de toda la aplicacion
 public class AppExceptionHandler {
 
 	/**
 	 * Metodo que controla las excepciones de tipo validacion en los dto
-	 * 
 	 * @return
 	 */
-	@ExceptionHandler(value = { MethodArgumentNotValidException.class })
-	public ResponseEntity<Object> handleValidationErrorException(MethodArgumentNotValidException ex,
-			WebRequest webRequest) {
-		Map<String, String> errores = new HashMap<String, String>();
+	@ExceptionHandler(value = {MethodArgumentNotValidException.class})
+	public ResponseEntity<Object>handleValidationErrorException(MethodArgumentNotValidException ex, WebRequest webRequest){
+		Map<String, String>errores= new HashMap<>();
 		for (ObjectError error : ex.getBindingResult().getAllErrors()) {
-			String valorCampo = ((FieldError) error).getField();
-			String mensajeError = error.getDefaultMessage();
+			String valorCampo= ((FieldError) error).getField();
+			String mensajeError= error.getDefaultMessage();
 			errores.put(valorCampo, mensajeError);
 		}
-
-		ValidacionErrores validacionErrores = new ValidacionErrores(errores, new Date());
-		return new ResponseEntity<>(validacionErrores, new HttpHeaders(), HttpStatus.BAD_REQUEST);
+		
+		ValidacionErrores validacionErrores= new ValidacionErrores(errores, new Date());
+		return new ResponseEntity<>(validacionErrores, new HttpHeaders(),HttpStatus.BAD_REQUEST);
 	}
-
+	
 	/**
 	 * metodo que controla todas las exeception internal server
-	 * 
 	 * @param exception
 	 * @param webRequest
 	 * @return
 	 */
 	@ExceptionHandler(Exception.class)
-	public ResponseEntity<ErrorsMessageResponse> manejadorInternalServerError(Exception exception,
-			WebRequest webRequest) {
-		ErrorsMessageResponse errorDetalles = new ErrorsMessageResponse(new Date(),
-				HttpStatus.INTERNAL_SERVER_ERROR.value(), exception.getMessage(), webRequest.getDescription(false));
-		return new ResponseEntity<>(errorDetalles, HttpStatus.INTERNAL_SERVER_ERROR);
+	public ResponseEntity<ErrorsMessageResponse>manejadorInternalServerError(Exception exception,WebRequest webRequest){
+		ErrorsMessageResponse errorDetalles= new ErrorsMessageResponse(new Date(),HttpStatus.INTERNAL_SERVER_ERROR.value(),exception.getMessage(),webRequest.getDescription(false));
+		return new ResponseEntity<>(errorDetalles,HttpStatus.INTERNAL_SERVER_ERROR);
 	}
-
-	@ExceptionHandler(IllegalReturnTypeException.class)
-	public ResponseEntity<ErrorsMessageResponse> manejadorInternalServerError(IllegalReturnTypeException exception,
-			WebRequest webRequest) {
-		ErrorsMessageResponse errorDetalles = new ErrorsMessageResponse(new Date(),
-				HttpStatus.INTERNAL_SERVER_ERROR.value(), AppConstantes.OCURRIO_ERROR_GENERICO,
-				webRequest.getDescription(false));
-		return new ResponseEntity<>(errorDetalles, HttpStatus.INTERNAL_SERVER_ERROR);
-	}
-
+	
 	/**
-	 * metodo que controlara todas las excepciones de la aplicacion not found
-	 * 
+	 * metodo que controlara todas las excepciones de la aplicacion not found 
 	 * @param exception
 	 * @param webRequest
 	 * @return
 	 */
 	@ExceptionHandler(ResourceNotFoundException.class)
-	public ResponseEntity<ErrorsMessageResponse> manejadorResourceNotFoundException(ResourceNotFoundException exception,
-			WebRequest webRequest) {
-		ErrorsMessageResponse errorDetalles = new ErrorsMessageResponse(new Date(), HttpStatus.NOT_FOUND.value(),
-				exception.getMessage(), webRequest.getDescription(false));
-		return new ResponseEntity<>(errorDetalles, HttpStatus.NOT_FOUND);
+	public ResponseEntity<ErrorsMessageResponse>manejadorResourceNotFoundException(ResourceNotFoundException exception,WebRequest webRequest){
+		ErrorsMessageResponse errorDetalles= new ErrorsMessageResponse(new Date(),HttpStatus.NOT_FOUND.value(),exception.getMessage(),webRequest.getDescription(false));
+		return new ResponseEntity<>(errorDetalles,HttpStatus.NOT_FOUND);
 	}
-
+	
 	/**
 	 * metodo que controlara todas las excepciones de la aplicacion bad request
-	 * 
 	 * @param exception
 	 * @param webRequest
 	 * @return
 	 */
 	@ExceptionHandler(BadRequestException.class)
-	public ResponseEntity<ErrorsMessageResponse> manejadorResourceNotFoundException(BadRequestException exception,
-			WebRequest webRequest) {
-		ErrorsMessageResponse errorDetalles = new ErrorsMessageResponse(new Date(), HttpStatus.BAD_REQUEST.value(),
-				exception.getMessage(), webRequest.getDescription(false));
-		return new ResponseEntity<>(errorDetalles, HttpStatus.BAD_REQUEST);
+	public ResponseEntity<ErrorsMessageResponse>manejadorResourceNotFoundException(BadRequestException exception,WebRequest webRequest){
+		ErrorsMessageResponse errorDetalles= new ErrorsMessageResponse(new Date(),HttpStatus.BAD_REQUEST.value(),exception.getMessage(),webRequest.getDescription(false));
+		return new ResponseEntity<>(errorDetalles,HttpStatus.BAD_REQUEST);
 	}
-
+	
 }

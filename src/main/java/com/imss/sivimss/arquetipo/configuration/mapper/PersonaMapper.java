@@ -1,10 +1,14 @@
 package com.imss.sivimss.arquetipo.configuration.mapper;
 
+import java.util.List;
+
 import org.apache.ibatis.annotations.Insert;
 import org.apache.ibatis.annotations.Options;
 import org.apache.ibatis.annotations.Param;
+import org.apache.ibatis.annotations.Select;
 import org.apache.ibatis.annotations.Update;
 
+import com.imss.sivimss.arquetipo.model.entity.PersonaEntity;
 import com.imss.sivimss.arquetipo.model.entity.PersonaEntityMyBatis;
 
 /*
@@ -31,14 +35,13 @@ public interface PersonaMapper {
 	 * @Options(useGeneratedKeys = true,keyProperty = "out.idPersona", keyColumn="id")
 	 * 
 	 * Estos son comodines que usa mybatis para pasar parametros a una query
-	 * #{nombre}  -> #{nombrecomodin}
 	 * @Param("nombre") -> El nombre del comodin debe hacer match con el parametro que estamos pasando
 	 * */
-	@Insert("INSERT INTO SVC_PERSONA(NOM_PERSONA, NOM_PRIMER_APELLIDO, NOM_SEGUNDO_APELLIDO) "
-			+ "VALUES ( #{nombre},#{apePaterno},#{apeMaterno} ) ;")
+	@Insert("INSERT INTO SVC_PERSONA(NOM_PERSONA, NOM_PRIMER_APELLIDO, NOM_SEGUNDO_APELLIDO, ID_USUARIO_ALTA) "
+			+ "VALUES ( #{nombre},#{apePaterno},#{apeMaterno}, #{idUsuarioAlta} ) ;")
 	@Options(useGeneratedKeys = true,keyProperty = "out.idPersona", keyColumn="id")
 	public int nuevoRegistroParam(@Param("nombre") String nombre,
-			@Param("apePaterno") String apePaterno,@Param("apeMaterno") String apeMaterno,
+			@Param("apePaterno") String apePaterno,@Param("apeMaterno") String apeMaterno, @Param("idUsuarioAlta") int idUsuarioAlta , 
 			@Param("out") PersonaEntityMyBatis out);
 	
 	
@@ -47,8 +50,7 @@ public interface PersonaMapper {
 	 * Esta debería ser la forma estandar para insertar nuevos registros
 	 * 
 	 * Se debe pasar un objeto con la anotacion @Param("out") para despues sacar los
-	 * valores del objeto usando los comodines 
-	 * #{out.nomPersona} -> #{nombreDelParam.nombreAtributoDeClase}
+	 * valores del objeto usando los comodines ejemplo
 	 * 
 	 * Esta expresión se utiliza para especificar el atributo del objeto que almacenará 
 	 * el identificador del nuevo registro. @Options tiene mas aplicaciones, pero en este ejemplo
@@ -56,8 +58,8 @@ public interface PersonaMapper {
 	 * @Options(useGeneratedKeys = true,keyProperty = "out.idPersona", keyColumn="id")
 	 * 
 	 * */
-	@Insert(value = "INSERT INTO SVC_PERSONA(NOM_PERSONA, NOM_PRIMER_APELLIDO, NOM_SEGUNDO_APELLIDO) "
-			+ "VALUES ( #{out.nomPersona},#{out.primerApellido},#{out.segundoApellido} )")
+	@Insert(value = "INSERT INTO SVC_PERSONA(NOM_PERSONA, NOM_PRIMER_APELLIDO, NOM_SEGUNDO_APELLIDO, ID_USUARIO_ALTA) "
+			+ "VALUES ( #{out.nomPersona},#{out.primerApellido},#{out.segundoApellido}, #{out.idUsuarioAlta} )")
 	@Options(useGeneratedKeys = true,keyProperty = "out.idPersona", keyColumn="id")
 	public int nuevoRegistroObj(@Param("out")PersonaEntityMyBatis persona);
 	
@@ -66,7 +68,9 @@ public interface PersonaMapper {
 			+ "SET  "
 			+ "	NOM_PERSONA=#{in.nomPersona}, "
 			+ "	NOM_PRIMER_APELLIDO=#{in.primerApellido}, "
-			+ "	NOM_SEGUNDO_APELLIDO=#{in.segundoApellido} "
-			+ "WHERE ID_PERSONA=#{in.idPersona}")
+			+ "	NOM_SEGUNDO_APELLIDO=#{in.segundoApellido}, "
+			+ " ID_USUARIO_MODIFICA = #{in.idUsuarioModifica} "
+			+ " WHERE ID_PERSONA=#{in.idPersona}")
 	public int actualizarRegistroObj(@Param("in")PersonaEntityMyBatis persona);
+	
 }
